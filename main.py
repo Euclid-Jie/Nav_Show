@@ -6,7 +6,7 @@ import os
 
 
 def generate_performance_page_pyecharts(
-    data_path="performance_data.csv", output_html="performance_report.html"
+    data_path="performance_data.csv", output_html="index.html"
 ):
     """
     生成包含业绩概览和净值曲线图的HTML页面。
