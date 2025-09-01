@@ -1,19 +1,17 @@
 import pandas as pd
 from datetime import timedelta, date
 from pyecharts import options as opts
-from pyecharts.charts import Line
-
-# 不再需要 Page, Html，因为我们将手动拼接 HTML
-# from pyecharts.charts import Page, Html
+from pyecharts.charts import Line, Grid
+import os
 
 
 def generate_performance_page_pyecharts(
     data_path="performance_data.csv", output_html="performance_report.html"
 ):
     """
-    使用手动 HTML 拼接和 Pyecharts 渲染嵌入方式，生成包含业绩概览和净值曲线图的HTML页面。
+    生成包含业绩概览和净值曲线图的HTML页面。
     """
-    # 1. 数据加载与处理 (无变化)
+    # 1. 数据加载与处理
     df = pd.read_csv(data_path, parse_dates=["Date"])
     df.set_index("Date", inplace=True)
     df.sort_index(inplace=True)
@@ -23,7 +21,7 @@ def generate_performance_page_pyecharts(
         df["Strategy_Cumulative_Return"] - df["Benchmark_Cumulative_Return"]
     )
 
-    # 2. 计算业绩概览数据 (无变化)
+    # 2. 计算业绩概览数据
     today = df.index.max()
     year_start = pd.Timestamp(today.year, 1, 1)
     periods = {
@@ -72,7 +70,11 @@ def generate_performance_page_pyecharts(
             "excess_return": excess_return * 100,
         }
 
-    # 3. 绘制净值曲线图 (无变化)
+    # drawdown
+    df['Running_max'] = df['Strategy_Cumulative_Return'].cummax()
+    df['Drawdown'] = df['Strategy_Cumulative_Return'] / df['Running_max'] - 1
+
+    # 3. 绘制净值曲线图
     date_list = df.index.strftime("%Y-%m-%d").tolist()
     # 收益率显示为百分比 (例如，1.2 变成 20%)
     strategy_data = [
@@ -84,6 +86,7 @@ def generate_performance_page_pyecharts(
     excess_data = [
         round(val * 100, 2) for val in df["Excess_Return"]
     ]  # 超额收益直接是数值
+    drawdown_data = [round(val * 100, 2 ) for val in df["Drawdown"]]
 
     line_chart = (
         Line(init_opts=opts.InitOpts(width="100%", height="500px", theme="light"))
@@ -112,38 +115,114 @@ def generate_performance_page_pyecharts(
             areastyle_opts=opts.AreaStyleOpts(opacity=0.3, color="#808080"),
             z_level=-1,
         )
+        # In the net_value_chart definition:
         .set_global_opts(
             title_opts=opts.TitleOpts(
                 title="时间加权实盘净值曲线",
                 subtitle="策略收益与基准收益率对比及超额收益",
                 pos_left="center",
+                pos_top="2%",
+                item_gap=15,
             ),
+            legend_opts=opts.LegendOpts(pos_top="12%", pos_left="center"),
+            # This combines the tooltip and the synchronized crosshair
             tooltip_opts=opts.TooltipOpts(
                 trigger="axis",
                 axis_pointer_type="cross",
-                background_color="rgba(255, 255, 255, 0.8)",
             ),
-            legend_opts=opts.LegendOpts(pos_top="8%", pos_left="center"),
-            xaxis_opts=opts.AxisOpts(type_="category", boundary_gap=False),
+            axispointer_opts=opts.AxisPointerOpts(
+                is_show=True, link=[{"xAxisIndex": "all"}]
+            ),
+            xaxis_opts=opts.AxisOpts(
+                type_="category",
+                boundary_gap=False,
+                axislabel_opts=opts.LabelOpts(is_show=False),
+            ),
             yaxis_opts=opts.AxisOpts(
                 type_="value",
                 name="收益率 (%)",
                 axislabel_opts=opts.LabelOpts(formatter="{value} %"),
             ),
+            # This correctly adds the synchronized slider
             datazoom_opts=[
-                opts.DataZoomOpts(type_="inside", range_start=0, range_end=100),
-                opts.DataZoomOpts(type_="slider", range_start=0, range_end=100),
+                opts.DataZoomOpts(
+                    type_="slider",
+                    xaxis_index=[0, 1],  # Link to x-axis of chart 0 and chart 1
+                    range_start=0,
+                    range_end=100,
+                )
             ],
+            # This adds the toolbox
+            toolbox_opts=opts.ToolboxOpts(is_show=True, pos_left="right"),
         )
     )
 
-    # 4. 生成 summary cards 的 HTML (无变化)
+    drawdown_chart = (
+        Line()
+        .add_xaxis(xaxis_data=date_list)
+        .add_yaxis(
+            series_name="策略回撤",
+            y_axis=drawdown_data,
+            is_smooth=True,
+            linestyle_opts=opts.LineStyleOpts(width=1, color="#d9534f"),
+            label_opts=opts.LabelOpts(is_show=False),
+            # Style as a red area chart
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.5, color="#d9534f"),
+        )
+        .set_global_opts(
+            xaxis_opts=opts.AxisOpts(type_="category", boundary_gap=False, grid_index=1),
+            yaxis_opts=opts.AxisOpts(type_="value", name="回撤 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %"), grid_index=1),
+            legend_opts=opts.LegendOpts(is_show=False),
+        )
+    )
+
+    grid_chart = (
+        Grid(init_opts=opts.InitOpts(width="100%", height="700px"))
+        .add(line_chart, grid_opts=opts.GridOpts(pos_top="15%", pos_bottom="30%"))
+        .add(drawdown_chart, grid_opts=opts.GridOpts(pos_top="78%"))
+    )
+
+    # 4. 生成 summary cards 的 HTML
     cards_html = ""
     for period, data in summary_data.items():
-        cards_html += f"""<div class="card"><p class="period-title">{period}</p><p class="date-range">{periods[period][0].strftime('%Y-%m-%d')} ~ {periods[period][1].strftime('%Y-%m-%d')}</p><div class="metric"><p>策略收益</p><p class="value {'positive' if data['strategy_return'] >= 0 else 'negative'}">{'▲' if data['strategy_return'] >= 0 else '▼'} {data['strategy_return']:.2f}%</p></div><div class="metric"><p>基准收益</p><p class="value {'positive' if data['benchmark_return'] >= 0 else 'negative'}">{'▲' if data['benchmark_return'] >= 0 else '▼'} {data['benchmark_return']:.2f}%</p></div><div class="metric"><p>超额收益</p><p class="value {'positive' if data['excess_return'] >= 0 else 'negative'}">{'▲' if data['excess_return'] >= 0 else '▼'} {data['excess_return']:.2f}%</p></div></div>"""
+        cards_html += f"""
+        <div class="card">
+            <p class="period-title">{period}</p>
+            <p class="date-range">
+                {periods[period][0].strftime('%Y-%m-%d')} ~ {periods[period][1].strftime('%Y-%m-%d')}
+            </p>
+            <div class="metric">
+                <p>策略收益</p>
+                <p class="value {'positive' if data['strategy_return'] >= 0 else 'negative'}">
+                    <span class="{'icon-positive' if data['strategy_return'] >= 0 else 'icon-negative'}">
+                        {'▲' if data['strategy_return'] >= 0 else '▼'}
+                    </span>
+                    {data['strategy_return']:.2f}%
+                </p>
+            </div>
+            <div class="metric">
+                <p>基准收益</p>
+                <p class="value {'positive' if data['benchmark_return'] >= 0 else 'negative'}">
+                    <span class="{'icon-positive' if data['benchmark_return'] >= 0 else 'icon-negative'}">
+                        {'▲' if data['benchmark_return'] >= 0 else '▼'}
+                    </span>
+                    {data['benchmark_return']:.2f}%
+                </p>
+            </div>
+            <div class="metric">
+                <p>超额收益</p>
+                <p class="value {'positive' if data['excess_return'] >= 0 else 'negative'}">
+                    <span class="{'icon-positive' if data['excess_return'] >= 0 else 'icon-negative'}">
+                        {'▲' if data['excess_return'] >= 0 else '▼'}
+                    </span>
+                    {data['excess_return']:.2f}%
+                </p>
+            </div>
+        </div>
+        """
 
     # 5. 获取 Pyecharts 图表生成的 HTML 片段和所需的 JS 依赖
-    pyecharts_chart_embed_html = line_chart.render_embed()
+    pyecharts_chart_embed_html = grid_chart.render_embed()
 
     # 获取 JS 依赖，并格式化成 <script> 标签
     # Note: line_chart.js_dependencies 是一个 OrderedSet, 需要先转为 list
@@ -159,7 +238,7 @@ def generate_performance_page_pyecharts(
         <title>策略业绩报告</title>
         {js_links_html}
         <style>
-            body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 20px; background-color: #f0f2f5; color: #333; }}
+            body {{font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 20px; background-color: #f0f2f5; color: #333;}}
             .container {{ max-width: 1200px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }}
             h1 {{ color: #2c3e50; text-align: center; margin-bottom: 40px; }}
             .summary-cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }}
@@ -168,7 +247,18 @@ def generate_performance_page_pyecharts(
             .card .date-range {{ font-size: 0.8em; color: #666; margin-bottom: 15px; }}
             .metric {{ margin-bottom: 10px; }}
             .metric p {{ margin: 0; font-size: 0.9em; color: #555; }}
-            .metric .value {{ font-size: 1.1em; font-weight: bold; margin-top: 5px; }}
+            .metric .value {{
+                font-size: 1.1em;
+                font-weight: 700;
+                margin-top: 5px;
+                color: #333; /* Make the number dark grey/black */
+            }}
+            .icon-positive {{
+                color: #28a745; /* Green */
+            }}
+            .icon-negative {{
+                color: #dc3545; /* Red */
+            }}
             .positive {{ color: #28a745; }}
             .negative {{ color: #dc3545; }}
             .chart-section {{ border: 1px solid #e0e0e0; border-radius: 6px; padding: 20px; }}
@@ -191,7 +281,6 @@ def generate_performance_page_pyecharts(
     with open(output_html, "w", encoding="utf-8") as f:
         f.write(final_html_content)
     print(f"Pyecharts 业绩报告已生成到: {output_html}")
-
 
 
 if __name__ == "__main__":
