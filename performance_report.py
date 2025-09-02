@@ -112,7 +112,7 @@ def generate_performance_page_from_template(
     benchmark_data = [
         round((val - 1) * 100, 2) for val in df["Benchmark_Cumulative_Return"]
     ]
-    excess_data = [round(s - b, 2) for s, b in zip(strategy_data, benchmark_data)]
+    excess_data = [round((val - 1) * 100, 2) for val in df["Excess_Return_Cumulative"]]
     drawdown_data_strategy = [round(val * 100, 2) for val in df["Drawdown_global"]]
     drawdown_data_excess = [round(val * 100, 2) for val in df["Drawdown_excess"][df["Drawdown_excess"].notna()]]
 
@@ -136,7 +136,7 @@ def generate_performance_page_from_template(
             label_opts=opts.LabelOpts(is_show=False),
         )
         .add_yaxis(
-            "累计超额收益",
+            "累计几何超额收益",
             excess_data,
             is_smooth=True,
             is_symbol_show=False,
@@ -195,7 +195,7 @@ def generate_performance_page_from_template(
             areastyle_opts=opts.AreaStyleOpts(opacity=0.5, color="#d9534f"),
         )
         .add_yaxis(
-            "超额收益回撤",
+            "几何超额收益回撤",
             drawdown_data_excess,
             is_smooth=True,
             is_symbol_show=False,
