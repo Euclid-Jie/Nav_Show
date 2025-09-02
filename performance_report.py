@@ -113,20 +113,26 @@ def generate_performance_page_from_template(
             "策略收益",
             strategy_data,
             is_smooth=True,
+            is_symbol_show=False,
             linestyle_opts=opts.LineStyleOpts(width=2, color="#d9534f"),
+            label_opts=opts.LabelOpts(is_show=False),
         )
         .add_yaxis(
             "基准收益 (中证500)",
             benchmark_data,
             is_smooth=True,
+            is_symbol_show=False,
             linestyle_opts=opts.LineStyleOpts(width=2, color="#5cb85c"),
+            label_opts=opts.LabelOpts(is_show=False),
         )
         .add_yaxis(
             "累计超额收益",
             excess_data,
             is_smooth=True,
+            is_symbol_show=False,
             linestyle_opts=opts.LineStyleOpts(width=1, color="#007bff"),
             areastyle_opts=opts.AreaStyleOpts(opacity=0.2, color="#007bff"),
+            label_opts=opts.LabelOpts(is_show=False),
         )
         .set_global_opts(
             title_opts=opts.TitleOpts(title="时间加权实盘净值曲线", pos_left="center"),
@@ -154,6 +160,7 @@ def generate_performance_page_from_template(
             "策略回撤",
             drawdown_data,
             is_smooth=True,
+            is_symbol_show=False,
             label_opts=opts.LabelOpts(is_show=False),
             linestyle_opts=opts.LineStyleOpts(width=1, color="#d9534f"),
             areastyle_opts=opts.AreaStyleOpts(opacity=0.5, color="#d9534f"),
