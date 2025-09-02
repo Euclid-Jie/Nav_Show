@@ -26,6 +26,10 @@ def generate_performance_page_from_template(
     df["Drawdown_global"] = (
         df["Strategy_Cumulative_Return"] / df["Running_max_global"] - 1
     )
+    df["Running_max_excess"] = (df["Strategy_Cumulative_Return"] - df["Benchmark_Cumulative_Return"]).cummax()
+    df["Drawdown_excess"] = (
+        df["Strategy_Cumulative_Return"] - df["Benchmark_Cumulative_Return"]
+    ) / df["Running_max_excess"].replace(0, pd.NA) - 1
 
     # 2. Calculate data for all periods
     today = df.index.max()
@@ -104,7 +108,8 @@ def generate_performance_page_from_template(
         round((val - 1) * 100, 2) for val in df["Benchmark_Cumulative_Return"]
     ]
     excess_data = [round(s - b, 2) for s, b in zip(strategy_data, benchmark_data)]
-    drawdown_data = [round(val * 100, 2) for val in df["Drawdown_global"]]
+    drawdown_data_strategy = [round(val * 100, 2) for val in df["Drawdown_global"]]
+    drawdown_data_excess = [round(val * 100, 2) for val in df["Drawdown_excess"][df["Drawdown_excess"].notna()]]
 
     line_chart = (
         Line(init_opts=opts.InitOpts(height="500px", theme="light"))
@@ -135,8 +140,8 @@ def generate_performance_page_from_template(
             label_opts=opts.LabelOpts(is_show=False),
         )
         .set_global_opts(
-            title_opts=opts.TitleOpts(title="时间加权实盘净值曲线", pos_left="center"),
-            legend_opts=opts.LegendOpts(pos_top="8%", pos_left="center"),
+            title_opts=opts.TitleOpts(title="净值曲线", pos_left="center"),
+            legend_opts=opts.LegendOpts(pos_top="8%", pos_left="60.5%"),
             tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
             axispointer_opts=opts.AxisPointerOpts(
                 is_show=True, link=[{"xAxisIndex": "all"}]
@@ -158,19 +163,28 @@ def generate_performance_page_from_template(
         .add_xaxis(date_list)
         .add_yaxis(
             "策略回撤",
-            drawdown_data,
+            drawdown_data_strategy,
             is_smooth=True,
             is_symbol_show=False,
             label_opts=opts.LabelOpts(is_show=False),
             linestyle_opts=opts.LineStyleOpts(width=1, color="#d9534f"),
             areastyle_opts=opts.AreaStyleOpts(opacity=0.5, color="#d9534f"),
         )
+        .add_yaxis(
+            "超额收益回撤",
+            drawdown_data_excess,
+            is_smooth=True,
+            is_symbol_show=False,
+            label_opts=opts.LabelOpts(is_show=False),
+            linestyle_opts=opts.LineStyleOpts(width=1, color="#5cb85c"),
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.5, color="#5cb85c"),
+        )
         .set_global_opts(
             yaxis_opts=opts.AxisOpts(
                 name="回撤 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %")
             ),
-            legend_opts=opts.LegendOpts(is_show=False),
-            xaxis_opts= opts.AxisOpts(is_show=False)
+            legend_opts=opts.LegendOpts(is_show=True, pos_left="73%", pos_top="70%"),
+            xaxis_opts=opts.AxisOpts(is_show=False),
         )
     )
     grid_chart = Grid(init_opts=opts.InitOpts(width="100%", height="700px"))
