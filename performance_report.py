@@ -1,9 +1,8 @@
 import pandas as pd
 import json
-from datetime import timedelta, date
+from datetime import timedelta
 from pyecharts import options as opts
 from pyecharts.charts import Line, Grid
-import os
 
 
 def calculate_indicators(df_period, risk_free_rate=0.02):
@@ -237,7 +236,11 @@ def generate_performance_page_from_template(
             yaxis_opts=opts.AxisOpts(
                 name="收益率 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %")
             ),
-            datazoom_opts=[opts.DataZoomOpts(type_="slider", xaxis_index=[0, 1])],
+            datazoom_opts=[
+                opts.DataZoomOpts(
+                    type_="slider", xaxis_index=[0, 1], range_start=0, range_end=100
+                )
+            ],
             toolbox_opts=opts.ToolboxOpts(is_show=True, pos_left="right"),
         )
     )
