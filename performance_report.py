@@ -155,7 +155,18 @@ def generate_performance_page_from_template(
                     type_="slider", xaxis_index=[0, 1], range_start=0, range_end=100
                 )
             ],
-            toolbox_opts=opts.ToolboxOpts(is_show=True, pos_left="right"),
+            toolbox_opts=opts.ToolboxOpts(
+                is_show=True,
+                pos_left="right",
+                feature=opts.ToolBoxFeatureOpts(
+                    save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(
+                        title="保存为图片",
+                        pixel_ratio=4,  # 提高分辨率
+                        background_color="white",  # 设置背景色
+                        name="performance_report_chart",  # 设置文件名
+                    )
+                ),
+            ),
         )
     )
     drawdown_chart = (
