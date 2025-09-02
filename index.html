@@ -77,16 +77,17 @@
         }
 
         .metric .value {
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: 700;
             margin-top: 5px;
+            color: #333;
         }
 
-        .positive {
+        .metric .icon.positive {
             color: #d9534f;
         }
 
-        .negative {
+        .metric .icon.negative {
             color: #5cb85c;
         }
 
@@ -224,39 +225,39 @@
             
         <div class="card">
             <p class="period-title">当日</p><p class="date-range">2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value positive">▲ 5.07%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value positive">▲ 3.87%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value positive">▲ 1.20%</p></div>
+            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 5.07%</p></div>
+            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 3.87%</p></div>
+            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 1.20%</p></div>
         </div>
         <div class="card">
             <p class="period-title">近一周</p><p class="date-range">2025-08-15 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value positive">▲ 5.07%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value positive">▲ 3.87%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value positive">▲ 1.20%</p></div>
+            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 5.07%</p></div>
+            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 3.87%</p></div>
+            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 1.20%</p></div>
         </div>
         <div class="card">
             <p class="period-title">近一月</p><p class="date-range">2025-07-23 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value positive">▲ 11.80%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value positive">▲ 11.86%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value negative">▼ -0.06%</p></div>
+            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 11.80%</p></div>
+            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 11.86%</p></div>
+            <div class="metric"><p>超额收益</p><p class="value"><span class="icon negative">▼</span> -0.06%</p></div>
         </div>
         <div class="card">
             <p class="period-title">近三月</p><p class="date-range">2025-05-24 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value positive">▲ 26.92%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value positive">▲ 20.69%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value positive">▲ 6.23%</p></div>
+            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 26.92%</p></div>
+            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 20.69%</p></div>
+            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 6.23%</p></div>
         </div>
         <div class="card">
             <p class="period-title">今年以来</p><p class="date-range">2025-01-01 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value positive">▲ 39.89%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value positive">▲ 19.16%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value positive">▲ 20.73%</p></div>
+            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 39.89%</p></div>
+            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 19.16%</p></div>
+            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 20.73%</p></div>
         </div>
         <div class="card">
             <p class="period-title">成立以来</p><p class="date-range">2020-05-12 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value positive">▲ 158.07%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value positive">▲ 23.77%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value positive">▲ 134.30%</p></div>
+            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 158.07%</p></div>
+            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 23.77%</p></div>
+            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 134.30%</p></div>
         </div>
         </div>
         <div class="chart-section">
@@ -9994,7 +9995,7 @@
         },
         {
             "type": "line",
-            "name": "\u8d85\u989d\u6536\u76ca",
+            "name": "\u7d2f\u8ba1\u8d85\u989d\u6536\u76ca",
             "connectNulls": false,
             "xAxisIndex": 0,
             "yAxisIndex": 0,
@@ -14807,11 +14808,12 @@
                 "width": 1,
                 "opacity": 1,
                 "curveness": 0,
-                "type": "dashed",
+                "type": "solid",
                 "color": "#007bff"
             },
             "areaStyle": {
-                "opacity": 0
+                "opacity": 0.2,
+                "color": "#007bff"
             },
             "zlevel": 0,
             "z": 0
@@ -19647,7 +19649,7 @@
             "data": [
                 "\u7b56\u7565\u6536\u76ca",
                 "\u57fa\u51c6\u6536\u76ca (\u4e2d\u8bc1500)",
-                "\u8d85\u989d\u6536\u76ca"
+                "\u7d2f\u8ba1\u8d85\u989d\u6536\u76ca"
             ],
             "selected": {},
             "show": true,
@@ -19677,7 +19679,7 @@
                 "\u7b56\u7565\u56de\u64a4"
             ],
             "selected": {},
-            "show": true,
+            "show": false,
             "padding": 5,
             "itemGap": 10,
             "itemWidth": 25,
@@ -20952,7 +20954,7 @@
             ]
         },
         {
-            "show": true,
+            "show": false,
             "scale": false,
             "nameLocation": "end",
             "nameGap": 15,
@@ -22347,8 +22349,8 @@
             "showDetail": true,
             "showDataShadow": true,
             "realtime": true,
-            "start": 20,
-            "end": 80,
+            "start": 0,
+            "end": 100,
             "orient": "horizontal",
             "xAxisIndex": [
                 0,
@@ -22364,8 +22366,8 @@
                 "showDetail": true,
                 "showDataShadow": true,
                 "realtime": true,
-                "start": 20,
-                "end": 80,
+                "start": 0,
+                "end": 100,
                 "orient": "horizontal",
                 "xAxisIndex": [
                     0,
@@ -22392,8 +22394,8 @@
             "show": false,
             "zlevel": 0,
             "z": 2,
-            "top": "15%",
-            "bottom": "30%",
+            "top": "12%",
+            "bottom": "33%",
             "containLabel": false,
             "backgroundColor": "transparent",
             "borderColor": "#ccc",
@@ -22405,8 +22407,8 @@
             "show": false,
             "zlevel": 0,
             "z": 2,
-            "top": "75%",
-            "bottom": "5%",
+            "top": "74%",
+            "bottom": "7%",
             "containLabel": false,
             "backgroundColor": "transparent",
             "borderColor": "#ccc",
