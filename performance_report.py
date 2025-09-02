@@ -188,9 +188,9 @@ def generate_performance_page_from_template(
         summary_cards_html += f"""
         <div class="card">
             <p class="period-title">{period_name}</p><p class="date-range">{date_range_str}</p>
-            <div class="metric"><p>策略收益</p><p class="value {'positive' if strategy_return >= 0 else 'negative'}"><span class="icon">{'▲' if strategy_return >= 0 else '▼'}</span> {strategy_return * 100:.2f}%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value {'positive' if benchmark_return >= 0 else 'negative'}"><span class="icon">{'▲' if benchmark_return >= 0 else '▼'}</span> {benchmark_return * 100:.2f}%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value {'positive' if excess_return >= 0 else 'negative'}"><span class="icon">{'▲' if excess_return >= 0 else '▼'}</span> {excess_return * 100:.2f}%</p></div>
+            <div class="metric"><p>策略收益</p><p class="value"><span class="icon {'positive' if strategy_return >= 0 else 'negative'}">{'▲' if strategy_return >= 0 else '▼'}</span> {strategy_return * 100:.2f}%</p></div>
+            <div class="metric"><p>基准收益</p><p class="value"><span class="icon {'positive' if benchmark_return >= 0 else 'negative'}">{'▲' if benchmark_return >= 0 else '▼'}</span> {benchmark_return * 100:.2f}%</p></div>
+            <div class="metric"><p>超额收益</p><p class="value"><span class="icon {'positive' if excess_return >= 0 else 'negative'}">{'▲' if excess_return >= 0 else '▼'}</span> {excess_return * 100:.2f}%</p></div>
         </div>"""
 
     # 4. Generate Pyecharts configuration
