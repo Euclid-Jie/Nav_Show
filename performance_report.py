@@ -220,10 +220,11 @@ def generate_performance_page_from_template(
             linestyle_opts=opts.LineStyleOpts(width=2, color="#5cb85c"),
         )
         .add_yaxis(
-            "超额收益",
+            "累计超额收益",
             excess_data,
             is_smooth=True,
-            linestyle_opts=opts.LineStyleOpts(width=1, type_="dashed", color="#007bff"),
+            linestyle_opts=opts.LineStyleOpts(width=1, color="#007bff"),
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.2, color="#007bff"),
         )
         .set_global_opts(
             title_opts=opts.TitleOpts(title="时间加权实盘净值曲线", pos_left="center"),
