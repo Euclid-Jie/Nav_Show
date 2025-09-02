@@ -259,13 +259,15 @@ def generate_performance_page_from_template(
         .set_global_opts(
             yaxis_opts=opts.AxisOpts(
                 name="回撤 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %")
-            )
+            ),
+            legend_opts=opts.LegendOpts(is_show=False),
+            xaxis_opts= opts.AxisOpts(is_show=False)
         )
     )
     grid_chart = Grid(init_opts=opts.InitOpts(width="100%", height="700px"))
-    grid_chart.add(line_chart, grid_opts=opts.GridOpts(pos_top="15%", pos_bottom="30%"))
+    grid_chart.add(line_chart, grid_opts=opts.GridOpts(pos_top="12%", pos_bottom="33%"))
     grid_chart.add(
-        drawdown_chart, grid_opts=opts.GridOpts(pos_top="75%", pos_bottom="5%")
+        drawdown_chart, grid_opts=opts.GridOpts(pos_top="74%", pos_bottom="7%")
     )
 
     # 5. Prepare data for template injection
