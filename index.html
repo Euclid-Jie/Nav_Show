@@ -30,6 +30,70 @@
             .positive { color: #28a745; }
             .negative { color: #dc3545; }
             .chart-section { border: 1px solid #e0e0e0; border-radius: 6px; padding: 20px; }
+
+            .indicators-section {
+                margin-top: 40px;
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+            }
+            .indicators-section h2 {
+                margin-top: 0;
+                margin-bottom: 25px;
+            }
+            .date-range-header {
+                font-size: 0.7em;
+                font-weight: normal;
+                color: #666;
+                margin-top: 5px;
+            }
+            .indicators-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+            .indicator-column h3 {
+                text-align: left;
+                margin-top: 0;
+                margin-bottom: 20px;
+                font-size: 1.2em;
+                color: #333;
+            }
+            .indicator-card-row {
+                display: flex;
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+            .indicator-card {
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 20px;
+                flex: 1; /* Each card takes equal space in a row */
+                text-align: left;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            }
+            .indicator-card.full-width {
+                flex-basis: 100%;
+            }
+            p.metric-title {
+                margin: 0 0 10px 0;
+                color: #555;
+                font-size: 0.9em;
+            }
+            p.metric-value {
+                margin: 0 0 8px 0;
+                font-size: 1.8em;
+                font-weight: 600;
+                color: #333;
+            }
+            p.metric-value.drawdown {
+                color: #d9534f; /* Red for drawdown */
+            }
+            p.metric-benchmark {
+                margin: 0;
+                color: #777;
+                font-size: 0.85em;
+            }
         </style>
     </head>
     <body>
@@ -219,11 +283,11 @@
     
 </head>
 <body >
-    <div id="322b8e9c82674eac9cf85475a512d32c" class="chart-container" style="width:100%; height:700px; "></div>
+    <div id="2185df2888bf4ff5abd11e92a5ce969a" class="chart-container" style="width:100%; height:700px; "></div>
     <script>
-        var chart_322b8e9c82674eac9cf85475a512d32c = echarts.init(
-            document.getElementById('322b8e9c82674eac9cf85475a512d32c'), 'white', {renderer: 'canvas'});
-        var option_322b8e9c82674eac9cf85475a512d32c = {
+        var chart_2185df2888bf4ff5abd11e92a5ce969a = echarts.init(
+            document.getElementById('2185df2888bf4ff5abd11e92a5ce969a'), 'white', {renderer: 'canvas'});
+        var option_2185df2888bf4ff5abd11e92a5ce969a = {
     "animation": true,
     "animationThreshold": 2000,
     "animationDuration": 1000,
@@ -22319,15 +22383,74 @@
         }
     ]
 };
-        chart_322b8e9c82674eac9cf85475a512d32c.setOption(option_322b8e9c82674eac9cf85475a512d32c);
+        chart_2185df2888bf4ff5abd11e92a5ce969a.setOption(option_2185df2888bf4ff5abd11e92a5ce969a);
             window.addEventListener('resize', function(){
-                chart_322b8e9c82674eac9cf85475a512d32c.resize();
+                chart_2185df2888bf4ff5abd11e92a5ce969a.resize();
             })
     </script>
 </body>
 </html>
 
             </div>
+                
+    <div class="indicators-section">
+        <h2>
+            投资组合指标分析
+            <p class="date-range-header">2020-05-12 至 2025-08-22 (1197个交易日)</p>
+        </h2>
+        <div class="indicators-grid">
+            <div class="indicator-column">
+                <h3>收益指标</h3>
+                <div class="indicator-card-row">
+                    <div class="indicator-card">
+                        <p class="metric-title">总收益率</p>
+                        <p class="metric-value">158.07%</p>
+                        <p class="metric-benchmark">基准: 23.77%</p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">年化收益率</p>
+                        <p class="metric-value">22.09%</p>
+                        <p class="metric-benchmark">基准: 4.59%</p>
+                    </div>
+                </div>
+                <div class="indicator-card-row">
+                    <div class="indicator-card full-width">
+                         <p class="metric-title">超额收益 (几何)</p>
+                        <p class="metric-value">134.30%</p>
+                        <p class="metric-benchmark">年化: 17.50%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="indicator-column">
+                <h3>风险指标</h3>
+                <div class="indicator-card-row">
+                    <div class="indicator-card">
+                        <p class="metric-title">波动率</p>
+                        <p class="metric-value">27.18%</p>
+                        <p class="metric-benchmark">基准: 21.24%</p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">夏普比率</p>
+                        <p class="metric-value">0.74</p>
+                        <p class="metric-benchmark">基准: 0.12</p>
+                    </div>
+                </div>
+                <div class="indicator-card-row">
+                     <div class="indicator-card">
+                        <p class="metric-title">策略最大回撤</p>
+                        <p class="metric-value drawdown">37.54%</p>
+                        <p class="metric-benchmark">基于策略收益计算</p>
+                    </div>
+                     <div class="indicator-card">
+                        <p class="metric-title">信息比率</p>
+                        <p class="metric-value">1.23</p>
+                        <p class="metric-benchmark">超额收益风险调整后回报</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
         </div>
     </body>
     </html>
