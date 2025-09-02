@@ -140,7 +140,15 @@ def generate_performance_page_from_template(
             label_opts=opts.LabelOpts(is_show=False),
         )
         .set_global_opts(
-            title_opts=opts.TitleOpts(title="净值曲线", pos_left="center"),
+            title_opts=opts.TitleOpts(
+                title="策略收益回撤走势",
+                pos_left="center",
+                title_textstyle_opts=opts.TextStyleOpts(
+                    font_size=20,        # 字体大小
+                    font_weight="bold",  # 字体粗细
+                    color="#333"         # 字体颜色
+                    )
+                ),
             legend_opts=opts.LegendOpts(pos_top="8%", pos_left="60.5%"),
             tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
             axispointer_opts=opts.AxisPointerOpts(
