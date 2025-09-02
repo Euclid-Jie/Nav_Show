@@ -5,6 +5,102 @@ from pyecharts.charts import Line, Grid
 import os
 
 
+def calculate_indicators(df_period, risk_free_rate=0.02):
+    """
+    Calculates key performance indicators for a given period of data.
+    Assumes 252 trading days in a year.
+    """
+    if df_period.empty or len(df_period) < 2:
+        return {
+            metric: 0
+            for metric in [
+                "total_return_strategy",
+                "annualized_return_strategy",
+                "volatility_strategy",
+                "sharpe_ratio_strategy",
+                "max_drawdown_strategy",
+                "total_return_benchmark",
+                "annualized_return_benchmark",
+                "volatility_benchmark",
+                "sharpe_ratio_benchmark",
+                "excess_return",
+                "annualized_alpha",
+                "information_ratio",
+                "start_date",
+                "end_date",
+                "days",
+            ]
+        }
+
+    # Basic Info
+    start_date = df_period.index[0].strftime("%Y-%m-%d")
+    end_date = df_period.index[-1].strftime("%Y-%m-%d")
+    days = len(df_period)
+    years = days / 252
+
+    # Strategy Calculations
+    strategy_returns = df_period["Strategy_Cumulative_Return"].pct_change().dropna()
+    total_return_strategy = (
+        df_period["Strategy_Cumulative_Return"].iloc[-1]
+        / df_period["Strategy_Cumulative_Return"].iloc[0]
+    ) - 1
+    annualized_return_strategy = (
+        (1 + total_return_strategy) ** (1 / years) - 1 if years > 0 else 0
+    )
+    volatility_strategy = strategy_returns.std() * (252**0.5)
+    sharpe_ratio_strategy = (
+        (annualized_return_strategy - risk_free_rate) / volatility_strategy
+        if volatility_strategy != 0
+        else 0
+    )
+
+    # Benchmark Calculations
+    benchmark_returns = df_period["Benchmark_Cumulative_Return"].pct_change().dropna()
+    total_return_benchmark = (
+        df_period["Benchmark_Cumulative_Return"].iloc[-1]
+        / df_period["Benchmark_Cumulative_Return"].iloc[0]
+    ) - 1
+    annualized_return_benchmark = (
+        (1 + total_return_benchmark) ** (1 / years) - 1 if years > 0 else 0
+    )
+    volatility_benchmark = benchmark_returns.std() * (252**0.5)
+    sharpe_ratio_benchmark = (
+        (annualized_return_benchmark - risk_free_rate) / volatility_benchmark
+        if volatility_benchmark != 0
+        else 0
+    )
+
+    # Alpha / Excess Return Calculations
+    excess_return = total_return_strategy - total_return_benchmark
+    annualized_alpha = annualized_return_strategy - annualized_return_benchmark
+    excess_daily_returns = strategy_returns - benchmark_returns
+    volatility_of_alpha = excess_daily_returns.std() * (252**0.5)
+    information_ratio = (
+        annualized_alpha / volatility_of_alpha if volatility_of_alpha != 0 else 0
+    )
+
+    # Max Drawdown (already calculated daily, just find the min for the period)
+    max_drawdown_strategy = df_period["Drawdown"].min()
+
+    return {
+        "total_return_strategy": total_return_strategy * 100,
+        "annualized_return_strategy": annualized_return_strategy * 100,
+        "volatility_strategy": volatility_strategy * 100,
+        "sharpe_ratio_strategy": sharpe_ratio_strategy,
+        "max_drawdown_strategy": abs(max_drawdown_strategy * 100),
+        "total_return_benchmark": total_return_benchmark * 100,
+        "annualized_return_benchmark": annualized_return_benchmark * 100,
+        "volatility_benchmark": volatility_benchmark * 100,
+        "sharpe_ratio_benchmark": sharpe_ratio_benchmark,
+        "excess_return": excess_return * 100,
+        "annualized_alpha": annualized_alpha * 100,
+        "information_ratio": information_ratio,
+        "start_date": start_date,
+        "end_date": end_date,
+        "days": days,
+    }
+
+
 def generate_performance_page_pyecharts(
     data_path="performance_data.csv", output_html="index.html"
 ):
@@ -73,6 +169,15 @@ def generate_performance_page_pyecharts(
     # drawdown
     df['Running_max'] = df['Strategy_Cumulative_Return'].cummax()
     df['Drawdown'] = df['Strategy_Cumulative_Return'] / df['Running_max'] - 1
+
+    all_indicators_data = {
+        '1m': calculate_indicators(df.loc[today - pd.DateOffset(months=1):]),
+        '3m': calculate_indicators(df.loc[today - pd.DateOffset(months=3):]),
+        '6m': calculate_indicators(df.loc[today - pd.DateOffset(months=6):]),
+        '1y': calculate_indicators(df.loc[today - pd.DateOffset(years=1):]),
+        'ytd': calculate_indicators(df.loc[str(today.year):]),
+        'all': calculate_indicators(df),
+    }
 
     # 3. 绘制净值曲线图
     date_list = df.index.strftime("%Y-%m-%d").tolist()
@@ -221,6 +326,69 @@ def generate_performance_page_pyecharts(
         </div>
         """
 
+    # 生成 indicators table 的 HTML
+    # 生成 indicators card-style 的 HTML
+    all_data = all_indicators_data["all"]
+    indicator_html = f"""
+    <div class="indicators-section">
+        <h2>
+            投资组合指标分析
+            <p class="date-range-header">{all_data['start_date']} 至 {all_data['end_date']} ({all_data['days']}个交易日)</p>
+        </h2>
+        <div class="indicators-grid">
+            <div class="indicator-column">
+                <h3>收益指标</h3>
+                <div class="indicator-card-row">
+                    <div class="indicator-card">
+                        <p class="metric-title">总收益率</p>
+                        <p class="metric-value">{all_data['total_return_strategy']:.2f}%</p>
+                        <p class="metric-benchmark">基准: {all_data['total_return_benchmark']:.2f}%</p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">年化收益率</p>
+                        <p class="metric-value">{all_data['annualized_return_strategy']:.2f}%</p>
+                        <p class="metric-benchmark">基准: {all_data['annualized_return_benchmark']:.2f}%</p>
+                    </div>
+                </div>
+                <div class="indicator-card-row">
+                    <div class="indicator-card full-width">
+                         <p class="metric-title">超额收益 (几何)</p>
+                        <p class="metric-value">{all_data['excess_return']:.2f}%</p>
+                        <p class="metric-benchmark">年化: {all_data['annualized_alpha']:.2f}%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="indicator-column">
+                <h3>风险指标</h3>
+                <div class="indicator-card-row">
+                    <div class="indicator-card">
+                        <p class="metric-title">波动率</p>
+                        <p class="metric-value">{all_data['volatility_strategy']:.2f}%</p>
+                        <p class="metric-benchmark">基准: {all_data['volatility_benchmark']:.2f}%</p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">夏普比率</p>
+                        <p class="metric-value">{all_data['sharpe_ratio_strategy']:.2f}</p>
+                        <p class="metric-benchmark">基准: {all_data['sharpe_ratio_benchmark']:.2f}</p>
+                    </div>
+                </div>
+                <div class="indicator-card-row">
+                     <div class="indicator-card">
+                        <p class="metric-title">策略最大回撤</p>
+                        <p class="metric-value drawdown">{all_data['max_drawdown_strategy']:.2f}%</p>
+                        <p class="metric-benchmark">基于策略收益计算</p>
+                    </div>
+                     <div class="indicator-card">
+                        <p class="metric-title">信息比率</p>
+                        <p class="metric-value">{all_data['information_ratio']:.2f}</p>
+                        <p class="metric-benchmark">超额收益风险调整后回报</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+
     # 5. 获取 Pyecharts 图表生成的 HTML 片段和所需的 JS 依赖
     pyecharts_chart_embed_html = grid_chart.render_embed()
 
@@ -262,6 +430,70 @@ def generate_performance_page_pyecharts(
             .positive {{ color: #28a745; }}
             .negative {{ color: #dc3545; }}
             .chart-section {{ border: 1px solid #e0e0e0; border-radius: 6px; padding: 20px; }}
+
+            .indicators-section {{
+                margin-top: 40px;
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+            }}
+            .indicators-section h2 {{
+                margin-top: 0;
+                margin-bottom: 25px;
+            }}
+            .date-range-header {{
+                font-size: 0.7em;
+                font-weight: normal;
+                color: #666;
+                margin-top: 5px;
+            }}
+            .indicators-grid {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }}
+            .indicator-column h3 {{
+                text-align: left;
+                margin-top: 0;
+                margin-bottom: 20px;
+                font-size: 1.2em;
+                color: #333;
+            }}
+            .indicator-card-row {{
+                display: flex;
+                gap: 20px;
+                margin-bottom: 20px;
+            }}
+            .indicator-card {{
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 20px;
+                flex: 1; /* Each card takes equal space in a row */
+                text-align: left;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            }}
+            .indicator-card.full-width {{
+                flex-basis: 100%;
+            }}
+            p.metric-title {{
+                margin: 0 0 10px 0;
+                color: #555;
+                font-size: 0.9em;
+            }}
+            p.metric-value {{
+                margin: 0 0 8px 0;
+                font-size: 1.8em;
+                font-weight: 600;
+                color: #333;
+            }}
+            p.metric-value.drawdown {{
+                color: #d9534f; /* Red for drawdown */
+            }}
+            p.metric-benchmark {{
+                margin: 0;
+                color: #777;
+                font-size: 0.85em;
+            }}
         </style>
     </head>
     <body>
@@ -273,6 +505,7 @@ def generate_performance_page_pyecharts(
             <div class="chart-section">
                 {pyecharts_chart_embed_html}
             </div>
+                {indicator_html}
         </div>
     </body>
     </html>
