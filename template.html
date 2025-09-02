@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>策略业绩报告</title>
+    <script src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        h1,
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card .period-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .card .date-range {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .metric {
+            margin-bottom: 10px;
+        }
+
+        .metric p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .metric .value {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .positive {
+            color: #d9534f;
+        }
+
+        .negative {
+            color: #5cb85c;
+        }
+
+        .chart-section {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 700px;
+        }
+
+        .indicators-section {
+            margin-top: 40px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .indicators-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .indicators-section h2 {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .date-range-header {
+            font-size: 0.7em;
+            font-weight: normal;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .period-buttons {
+            display: flex;
+            gap: 5px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .period-btn {
+            background-color: transparent;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #495057;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .period-btn:hover {
+            background-color: #dde2e7;
+        }
+
+        .period-btn.active {
+            background-color: #ffffff;
+            color: #007bff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .indicator-column h3 {
+            text-align: left;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .indicator-card-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .indicator-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        .indicator-card.full-width {
+            flex-basis: 100%;
+        }
+
+        p.metric-title {
+            margin: 0 0 10px 0;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        p.metric-value {
+            margin: 0 0 8px 0;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        p.metric-value.drawdown {
+            color: #d9534f;
+        }
+
+        p.metric-benchmark {
+            margin: 0;
+            color: #777;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>我的策略业绩报告</h1>
+        <div class="summary-cards">
+            {{ SUMMARY_CARDS_HTML }}
+        </div>
+        <div class="chart-section">
+            <div id="chart-container"></div>
+        </div>
+        <div class="indicators-section">
+            <div class="indicators-header">
+                <h2>投资组合指标分析<p id="indicator-date-range" class="date-range-header"></p>
+                </h2>
+                <div class="period-buttons">
+                    <button class="period-btn" data-period="1m">近一月</button>
+                    <button class="period-btn" data-period="3m">近三月</button>
+                    <button class="period-btn" data-period="6m">近六月</button>
+                    <button class="period-btn" data-period="ytd">今年以来</button>
+                    <button class="period-btn" data-period="1y">近一年</button>
+                    <button class="period-btn" data-period="all">成立以来</button>
+                </div>
+            </div>
+            <div class="indicators-grid">
+                <div class="indicator-column">
+                    <h3>收益指标</h3>
+                    <div class="indicator-card-row">
+                        <div class="indicator-card">
+                            <p class="metric-title">总收益率</p>
+                            <p class="metric-value" id="total_return_strategy"></p>
+                            <p class="metric-benchmark" id="total_return_benchmark"></p>
+                        </div>
+                        <div class="indicator-card">
+                            <p class="metric-title">年化收益率</p>
+                            <p class="metric-value" id="annualized_return_strategy"></p>
+                            <p class="metric-benchmark" id="annualized_return_benchmark"></p>
+                        </div>
+                    </div>
+                    <div class="indicator-card-row">
+                        <div class="indicator-card full-width">
+                            <p class="metric-title">超额收益 (几何)</p>
+                            <p class="metric-value" id="excess_return"></p>
+                            <p class="metric-benchmark" id="annualized_alpha"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="indicator-column">
+                    <h3>风险指标</h3>
+                    <div class="indicator-card-row">
+                        <div class="indicator-card">
+                            <p class="metric-title">波动率</p>
+                            <p class="metric-value" id="volatility_strategy"></p>
+                            <p class="metric-benchmark" id="volatility_benchmark"></p>
+                        </div>
+                        <div class="indicator-card">
+                            <p class="metric-title">夏普比率</p>
+                            <p class="metric-value" id="sharpe_ratio_strategy"></p>
+                            <p class="metric-benchmark" id="sharpe_ratio_benchmark"></p>
+                        </div>
+                    </div>
+                    <div class="indicator-card-row">
+                        <div class="indicator-card">
+                            <p class="metric-title">策略最大回撤</p>
+                            <p class="metric-value drawdown" id="max_drawdown_strategy"></p>
+                            <p class="metric-benchmark">基于策略收益计算</p>
+                        </div>
+                        <div class="indicator-card">
+                            <p class="metric-title">信息比率</p>
+                            <p class="metric-value" id="information_ratio"></p>
+                            <p class="metric-benchmark">超额收益风险调整后回报</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartConfig = '{{ CHART_CONFIG_JSON }}';
+            const indicatorsData = '{{ ALL_INDICATORS_JSON }}';
+
+            const myChart = echarts.init(document.getElementById('chart-container'));
+            myChart.setOption(chartConfig);
+            window.addEventListener('resize', () => myChart.resize());
+
+            const el = (id) => document.getElementById(id);
+            const updateIndicators = (period) => {
+                const data = indicatorsData[period];
+                if (!data) return;
+
+                el('indicator-date-range').innerText = `${data.start_date} 至 ${data.end_date} (${data.days}个交易日)`;
+                el('total_return_strategy').innerText = `${data.total_return_strategy.toFixed(2)}%`;
+                el('total_return_benchmark').innerText = `基准: ${data.total_return_benchmark.toFixed(2)}%`;
+                el('annualized_return_strategy').innerText = `${data.annualized_return_strategy.toFixed(2)}%`;
+                el('annualized_return_benchmark').innerText = `基准: ${data.annualized_return_benchmark.toFixed(2)}%`;
+                el('excess_return').innerText = `${data.excess_return.toFixed(2)}%`;
+                el('annualized_alpha').innerText = `年化: ${data.annualized_alpha.toFixed(2)}%`;
+                el('volatility_strategy').innerText = `${data.volatility_strategy.toFixed(2)}%`;
+                el('volatility_benchmark').innerText = `基准: ${data.volatility_benchmark.toFixed(2)}%`;
+                el('sharpe_ratio_strategy').innerText = data.sharpe_ratio_strategy.toFixed(2);
+                el('sharpe_ratio_benchmark').innerText = `基准: ${data.sharpe_ratio_benchmark.toFixed(2)}`;
+                el('max_drawdown_strategy').innerText = `${data.max_drawdown_strategy.toFixed(2)}%`;
+                el('information_ratio').innerText = data.information_ratio.toFixed(2);
+            };
+
+            const buttons = document.querySelectorAll('.period-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const period = event.target.dataset.period;
+                    buttons.forEach(btn => btn.classList.remove('active'));
+                    event.target.classList.add('active');
+                    updateIndicators(period);
+                });
+            });
+
+            document.querySelector('.period-btn[data-period="all"]').classList.add('active');
+            updateIndicators('all');
+        });
+    </script>
+</body>
+
+</html>
