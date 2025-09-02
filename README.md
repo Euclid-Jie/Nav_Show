@@ -5,6 +5,8 @@
 
 本项目用于量化投资策略的净值数据处理、业绩分析与可视化展示。支持从 Excel 源数据自动转换为标准 CSV，计算多种业绩指标，并生成美观的网页报告。
 
+无风险利率： 本项目采用对应**三个月期SHIBOR均值**作为无风险利率。
+
 ## 文件结构与功能
 
 - `量子智投泰山500增强净值20250828.xlsx`：原始净值数据（Excel）。
@@ -47,7 +49,7 @@
 安装依赖：
 
 ```bash
-pip install pandas numpy pyecharts openpyxl
+pip install pandas pyecharts openpyxl
 ```
 
 ## 许可证
