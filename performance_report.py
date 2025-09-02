@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import json
 from datetime import timedelta, date
 from pyecharts import options as opts
