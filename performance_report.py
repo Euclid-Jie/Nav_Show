@@ -26,10 +26,15 @@ def generate_performance_page_from_template(
     df["Drawdown_global"] = (
         df["Strategy_Cumulative_Return"] / df["Running_max_global"] - 1
     )
-    df["Running_max_excess"] = (df["Strategy_Cumulative_Return"] - df["Benchmark_Cumulative_Return"]).cummax()
+    df["Excess_Return_Pct"] = (
+        df["Strategy_Cumulative_Return"].pct_change()
+        - df["Benchmark_Cumulative_Return"].pct_change()
+    )
+    df["Excess_Return_Cumulative"] = (1 + df["Excess_Return_Pct"].fillna(0)).cumprod()
+    df["Running_max_excess"] = df["Excess_Return_Cumulative"].cummax()
     df["Drawdown_excess"] = (
-        df["Strategy_Cumulative_Return"] - df["Benchmark_Cumulative_Return"]
-    ) / df["Running_max_excess"].replace(0, pd.NA) - 1
+        df["Excess_Return_Cumulative"] / df["Running_max_excess"] - 1
+    )
 
     # 2. Calculate data for all periods
     today = df.index.max()
