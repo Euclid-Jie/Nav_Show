@@ -1,4 +1,5 @@
 import pandas as pd
+import akshare as ak
 import json
 from datetime import timedelta
 from pyecharts import options as opts
@@ -28,13 +29,16 @@ def generate_performance_page_from_template(
 
     # 2. Calculate data for all periods
     today = df.index.max()
+    rate_interbank_df = ak.rate_interbank(
+        market="上海银行同业拆借市场", symbol="Shibor人民币", indicator="3月"
+    )
     all_indicators_data = {
-        "1m": calculate_indicators(df.loc[today - pd.DateOffset(months=1) :]),
-        "3m": calculate_indicators(df.loc[today - pd.DateOffset(months=3) :]),
-        "6m": calculate_indicators(df.loc[today - pd.DateOffset(months=6) :]),
-        "ytd": calculate_indicators(df.loc[str(today.year) :]),
-        "1y": calculate_indicators(df.loc[today - pd.DateOffset(years=1) :]),
-        "all": calculate_indicators(df),
+        "1m": calculate_indicators(df.loc[today - pd.DateOffset(months=1) :], rate_interbank_df),
+        "3m": calculate_indicators(df.loc[today - pd.DateOffset(months=3) :], rate_interbank_df),
+        "6m": calculate_indicators(df.loc[today - pd.DateOffset(months=6) :], rate_interbank_df),
+        "ytd": calculate_indicators(df.loc[str(today.year) :], rate_interbank_df),
+        "1y": calculate_indicators(df.loc[today - pd.DateOffset(years=1) :], rate_interbank_df),
+        "all": calculate_indicators(df, rate_interbank_df),
     }
 
     # 3. Generate HTML for summary cards
