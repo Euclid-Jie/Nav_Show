@@ -1,13 +1,13 @@
 import pandas as pd
-import akshare as ak
 import json
 from datetime import timedelta
 from pyecharts import options as opts
 from pyecharts.charts import Line, Grid
-from utils import calculate_indicators
+from utils import calculate_indicators, get_rate_interbank_df
 
 
 def generate_performance_page_from_template(
+    rate_interbank_df,
     data_path="performance_data.csv",
     template_path="template.html",
     output_html="index.html",
@@ -38,9 +38,6 @@ def generate_performance_page_from_template(
 
     # 2. Calculate data for all periods
     today = df.index.max()
-    rate_interbank_df = ak.rate_interbank(
-        market="上海银行同业拆借市场", symbol="Shibor人民币", indicator="3月"
-    )
     all_indicators_data = {
         "1m": calculate_indicators(df.loc[today - pd.DateOffset(months=1) :], rate_interbank_df),
         "3m": calculate_indicators(df.loc[today - pd.DateOffset(months=3) :], rate_interbank_df),
@@ -238,5 +235,5 @@ def generate_performance_page_from_template(
 
 
 if __name__ == "__main__":
-    # Run the report generation
-    generate_performance_page_from_template()
+    rate_interbank_df = get_rate_interbank_df()
+    generate_performance_page_from_template(rate_interbank_df=rate_interbank_df)

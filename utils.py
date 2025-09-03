@@ -1,5 +1,12 @@
 import pandas as pd
+import akshare as ak
 
+
+def get_rate_interbank_df():
+    rate_interbank_df = ak.rate_interbank(
+        market="上海银行同业拆借市场", symbol="Shibor人民币", indicator="3月"
+    )
+    return rate_interbank_df
 
 def calculate_rf_rate(rate_interbank_df, start_date, end_date):
     """
