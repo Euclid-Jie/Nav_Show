@@ -60,10 +60,12 @@ def calculate_indicators(df_period, rate_interbank_df):
         }
 
     # Basic Info
+    start_date_obj = df_period.index[0]
+    end_date_obj = df_period.index[-1]
     start_date = df_period.index[0].strftime("%Y-%m-%d")
     end_date = df_period.index[-1].strftime("%Y-%m-%d")
-    days = len(df_period)
-    years = days / 252
+    days = int(np.busday_count(start_date_obj.date(), end_date_obj.date()) + 1)
+    years = days / 252 if days > 0 else 0
 
     # Risk-free rate (assumed to be annualized)
     risk_free_rate = (
