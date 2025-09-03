@@ -223,45 +223,107 @@
 <body>
     <div class="container">
         <h1>策略业绩报告</h1>
+
         <div class="summary-cards">
-            
-        <div class="card">
-            <p class="period-title">当日</p><p class="date-range">2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 5.07%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 3.87%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 1.20%</p></div>
+            <div class="card">
+                <p class="period-title">当日</p>
+                <p class="date-range" id="summary-date-daily">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-daily">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-daily">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-daily">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">近一周</p>
+                <p class="date-range" id="summary-date-weekly">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-weekly">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-weekly">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-weekly">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">近一月</p>
+                <p class="date-range" id="summary-date-1m">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-1m">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-1m">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-1m">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">近三月</p>
+                <p class="date-range" id="summary-date-3m">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-3m">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-3m">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-3m">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">今年以来</p>
+                <p class="date-range" id="summary-date-ytd">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-ytd">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-ytd">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-ytd">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">成立以来</p>
+                <p class="date-range" id="summary-date-all">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-all">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-all">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-all">--</p>
+                </div>
+            </div>
         </div>
-        <div class="card">
-            <p class="period-title">近一周</p><p class="date-range">2025-08-15 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 5.07%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 3.87%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 1.20%</p></div>
-        </div>
-        <div class="card">
-            <p class="period-title">近一月</p><p class="date-range">2025-07-23 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 11.80%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 11.86%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value"><span class="icon negative">▼</span> -0.06%</p></div>
-        </div>
-        <div class="card">
-            <p class="period-title">近三月</p><p class="date-range">2025-05-24 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 26.92%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 20.69%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 6.23%</p></div>
-        </div>
-        <div class="card">
-            <p class="period-title">今年以来</p><p class="date-range">2025-01-01 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 39.89%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 19.16%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 20.73%</p></div>
-        </div>
-        <div class="card">
-            <p class="period-title">成立以来</p><p class="date-range">2020-05-12 ~ 2025-08-22</p>
-            <div class="metric"><p>策略收益</p><p class="value"><span class="icon positive">▲</span> 158.07%</p></div>
-            <div class="metric"><p>基准收益</p><p class="value"><span class="icon positive">▲</span> 23.77%</p></div>
-            <div class="metric"><p>超额收益</p><p class="value"><span class="icon positive">▲</span> 134.30%</p></div>
-        </div>
-        </div>
+
+
         <div class="chart-section">
             <div id="chart-container"></div>
         </div>
@@ -361,7 +423,6 @@
         </div>
     </div>
 
-    <!-- 修复后的完整脚本 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // 这些变量将在你的后端模板引擎中被替换
@@ -27285,10 +27346,10 @@
         }
     ]
 };
-            const indicatorsData = {"1m": {"total_return_strategy": 9.658366618509383, "annualized_return_strategy": 202.3439428569838, "volatility_strategy": 36.720145004143255, "sharpe_ratio_strategy": 5.46809024430192, "sortino_ratio_strategy": NaN, "calmar_ratio_strategy": 347.58849278804644, "max_drawdown_strategy": 0.5821364833857423, "total_return_benchmark": 8.306191887892123, "annualized_return_benchmark": 160.51901801989126, "volatility_benchmark": 39.34572378842967, "sharpe_ratio_benchmark": 4.040188526819308, "sortino_ratio_benchmark": NaN, "total_ari_excess_return": 1.3521747306172616, "total_geo_excess_return": 1.2368855940001922, "annualized_alpha": 41.824924837092546, "beta": 0.8063524056802049, "information_ratio": 2.091640238060321, "volatility_excess": 19.996232658001844, "sharpe_ratio_excess": 0.7171494864315802, "max_drawdown_excess": 1.555195322771763, "start_date": "2025-07-25", "end_date": "2025-08-22", "days": 21}, "3m": {"total_return_strategy": 26.921752815619925, "annualized_return_strategy": 148.49605945774277, "volatility_strategy": 35.625526930643424, "sharpe_ratio_strategy": 4.123525498289629, "sortino_ratio_strategy": 16.54691185700072, "calmar_ratio_strategy": 68.46705868054933, "max_drawdown_strategy": 2.1688686839986704, "total_return_benchmark": 20.693335887237808, "annualized_return_benchmark": 105.06033231972923, "volatility_benchmark": 29.79070426409726, "sharpe_ratio_benchmark": 3.473131774034406, "sortino_ratio_benchmark": 9.340508123829302, "total_ari_excess_return": 6.228416928382119, "total_geo_excess_return": 5.2338001822176405, "annualized_alpha": 43.43572713801356, "beta": 1.0217318772817108, "information_ratio": 2.3449033400473906, "volatility_excess": 18.523461669484302, "sharpe_ratio_excess": 1.074924785898509, "max_drawdown_excess": 1.5551953227717519, "start_date": "2025-05-23", "end_date": "2025-08-22", "days": 66}, "6m": {"total_return_strategy": 23.786454336147365, "annualized_return_strategy": 51.23185717174097, "volatility_strategy": 38.80437908744571, "sharpe_ratio_strategy": 1.2762178717194808, "sortino_ratio_strategy": 1.6377269681003863, "calmar_ratio_strategy": 5.098009190237595, "max_drawdown_strategy": 10.049385016772261, "total_return_benchmark": 12.868112066009218, "annualized_return_benchmark": 26.446661355378144, "volatility_benchmark": 29.15181722735668, "sharpe_ratio_benchmark": 0.848579904404681, "sortino_ratio_benchmark": 1.343844514936914, "total_ari_excess_return": 10.918342270138147, "total_geo_excess_return": 9.972274419762893, "annualized_alpha": 24.785195816362826, "beta": 1.2000956112840888, "information_ratio": 1.3945906698975619, "volatility_excess": 17.772380348839846, "sharpe_ratio_excess": 1.0423252662010174, "max_drawdown_excess": 2.812553889678593, "start_date": "2025-02-24", "end_date": "2025-08-22", "days": 130}, "ytd": {"total_return_strategy": 44.277967238776775, "annualized_return_strategy": 73.87212522209086, "volatility_strategy": 34.769627098279294, "sharpe_ratio_strategy": 2.0755123010127075, "sortino_ratio_strategy": 2.847906997796658, "calmar_ratio_strategy": 7.350910040644226, "max_drawdown_strategy": 10.049385016772261, "total_return_benchmark": 23.026894105817487, "annualized_return_benchmark": 36.71257831964636, "volatility_benchmark": 24.95611001866683, "sharpe_ratio_benchmark": 1.4026722039402575, "sortino_ratio_benchmark": 2.2549976282412016, "total_ari_excess_return": 21.251073132959284, "total_geo_excess_return": 17.857339418342267, "annualized_alpha": 37.1595469024445, "beta": 1.2717438700553683, "information_ratio": 2.361389380857488, "volatility_excess": 15.73630643200013, "sharpe_ratio_excess": 1.6795589639413002, "max_drawdown_excess": 2.8125538896785596, "start_date": "2025-01-02", "end_date": "2025-08-22", "days": 167}, "1y": {"total_return_strategy": 109.8130081300813, "annualized_return_strategy": 103.96175047764014, "volatility_strategy": 42.0036900769995, "sharpe_ratio_strategy": 2.433402112075204, "sortino_ratio_strategy": 3.670001887946993, "calmar_ratio_strategy": 6.177936078035372, "max_drawdown_strategy": 16.82790970389916, "total_return_benchmark": 50.50277503300802, "annualized_return_benchmark": 48.17263351087608, "volatility_benchmark": 31.638884417255024, "sharpe_ratio_benchmark": 1.4672689014357614, "sortino_ratio_benchmark": 2.4013935714862726, "total_ari_excess_return": 59.31023309707329, "total_geo_excess_return": 41.55705134136518, "annualized_alpha": 55.789116966764055, "beta": 1.2406708130506097, "information_ratio": 3.325385725231306, "volatility_excess": 16.77673556588191, "sharpe_ratio_excess": 2.26157640355603, "max_drawdown_excess": 5.993930570549177, "start_date": "2024-08-22", "end_date": "2025-08-22", "days": 262}, "all": {"total_return_strategy": 158.07000000000002, "annualized_return_strategy": 18.916296325502802, "volatility_strategy": 27.17946168416835, "sharpe_ratio_strategy": 0.6151889920016403, "sortino_ratio_strategy": 0.8128388715864232, "calmar_ratio_strategy": 0.5038822256184725, "max_drawdown_strategy": 37.541106559741536, "total_return_benchmark": 23.771273608317433, "annualized_return_benchmark": 3.974168668575251, "volatility_benchmark": 21.240178315462327, "sharpe_ratio_benchmark": 0.08372707391107771, "sortino_ratio_benchmark": 0.12303135167064605, "total_ari_excess_return": 134.29872639168258, "total_geo_excess_return": 112.77007830509902, "annualized_alpha": 14.94212765692755, "beta": 1.0928928970086775, "information_ratio": 1.0467700144741747, "volatility_excess": 14.274508679381162, "sharpe_ratio_excess": 0.8826326958476504, "max_drawdown_excess": 25.78501797988837, "start_date": "2020-05-12", "end_date": "2025-08-22", "days": 1379}};
+            const allData = {"1m": {"total_return_strategy": 9.658366618509383, "annualized_return_strategy": 202.3439428569838, "volatility_strategy": 36.720145004143255, "sharpe_ratio_strategy": 5.46809024430192, "sortino_ratio_strategy": NaN, "calmar_ratio_strategy": 347.58849278804644, "max_drawdown_strategy": 0.5821364833857423, "total_return_benchmark": 8.306191887892123, "annualized_return_benchmark": 160.51901801989126, "volatility_benchmark": 39.34572378842967, "sharpe_ratio_benchmark": 4.040188526819308, "sortino_ratio_benchmark": NaN, "total_ari_excess_return": 1.3521747306172616, "total_geo_excess_return": 1.2368855940001922, "annualized_alpha": 41.824924837092546, "beta": 0.8063524056802049, "information_ratio": 2.091640238060321, "volatility_excess": 19.996232658001844, "sharpe_ratio_excess": 0.7171494864315802, "max_drawdown_excess": 1.555195322771763, "start_date": "2025-07-25", "end_date": "2025-08-22", "days": 21}, "3m": {"total_return_strategy": 26.921752815619925, "annualized_return_strategy": 148.49605945774277, "volatility_strategy": 35.625526930643424, "sharpe_ratio_strategy": 4.123525498289629, "sortino_ratio_strategy": 16.54691185700072, "calmar_ratio_strategy": 68.46705868054933, "max_drawdown_strategy": 2.1688686839986704, "total_return_benchmark": 20.693335887237808, "annualized_return_benchmark": 105.06033231972923, "volatility_benchmark": 29.79070426409726, "sharpe_ratio_benchmark": 3.473131774034406, "sortino_ratio_benchmark": 9.340508123829302, "total_ari_excess_return": 6.228416928382119, "total_geo_excess_return": 5.2338001822176405, "annualized_alpha": 43.43572713801356, "beta": 1.0217318772817108, "information_ratio": 2.3449033400473906, "volatility_excess": 18.523461669484302, "sharpe_ratio_excess": 1.074924785898509, "max_drawdown_excess": 1.5551953227717519, "start_date": "2025-05-23", "end_date": "2025-08-22", "days": 66}, "6m": {"total_return_strategy": 23.786454336147365, "annualized_return_strategy": 51.23185717174097, "volatility_strategy": 38.80437908744571, "sharpe_ratio_strategy": 1.2762178717194808, "sortino_ratio_strategy": 1.6377269681003863, "calmar_ratio_strategy": 5.098009190237595, "max_drawdown_strategy": 10.049385016772261, "total_return_benchmark": 12.868112066009218, "annualized_return_benchmark": 26.446661355378144, "volatility_benchmark": 29.15181722735668, "sharpe_ratio_benchmark": 0.848579904404681, "sortino_ratio_benchmark": 1.343844514936914, "total_ari_excess_return": 10.918342270138147, "total_geo_excess_return": 9.972274419762893, "annualized_alpha": 24.785195816362826, "beta": 1.2000956112840888, "information_ratio": 1.3945906698975619, "volatility_excess": 17.772380348839846, "sharpe_ratio_excess": 1.0423252662010174, "max_drawdown_excess": 2.812553889678593, "start_date": "2025-02-24", "end_date": "2025-08-22", "days": 130}, "ytd": {"total_return_strategy": 44.277967238776775, "annualized_return_strategy": 73.87212522209086, "volatility_strategy": 34.769627098279294, "sharpe_ratio_strategy": 2.0755123010127075, "sortino_ratio_strategy": 2.847906997796658, "calmar_ratio_strategy": 7.350910040644226, "max_drawdown_strategy": 10.049385016772261, "total_return_benchmark": 23.026894105817487, "annualized_return_benchmark": 36.71257831964636, "volatility_benchmark": 24.95611001866683, "sharpe_ratio_benchmark": 1.4026722039402575, "sortino_ratio_benchmark": 2.2549976282412016, "total_ari_excess_return": 21.251073132959284, "total_geo_excess_return": 17.857339418342267, "annualized_alpha": 37.1595469024445, "beta": 1.2717438700553683, "information_ratio": 2.361389380857488, "volatility_excess": 15.73630643200013, "sharpe_ratio_excess": 1.6795589639413002, "max_drawdown_excess": 2.8125538896785596, "start_date": "2025-01-02", "end_date": "2025-08-22", "days": 167}, "1y": {"total_return_strategy": 109.8130081300813, "annualized_return_strategy": 103.96175047764014, "volatility_strategy": 42.0036900769995, "sharpe_ratio_strategy": 2.433402112075204, "sortino_ratio_strategy": 3.670001887946993, "calmar_ratio_strategy": 6.177936078035372, "max_drawdown_strategy": 16.82790970389916, "total_return_benchmark": 50.50277503300802, "annualized_return_benchmark": 48.17263351087608, "volatility_benchmark": 31.638884417255024, "sharpe_ratio_benchmark": 1.4672689014357614, "sortino_ratio_benchmark": 2.4013935714862726, "total_ari_excess_return": 59.31023309707329, "total_geo_excess_return": 41.55705134136518, "annualized_alpha": 55.789116966764055, "beta": 1.2406708130506097, "information_ratio": 3.325385725231306, "volatility_excess": 16.77673556588191, "sharpe_ratio_excess": 2.26157640355603, "max_drawdown_excess": 5.993930570549177, "start_date": "2024-08-22", "end_date": "2025-08-22", "days": 262}, "all": {"total_return_strategy": 158.07000000000002, "annualized_return_strategy": 18.916296325502802, "volatility_strategy": 27.17946168416835, "sharpe_ratio_strategy": 0.6151889920016403, "sortino_ratio_strategy": 0.8128388715864232, "calmar_ratio_strategy": 0.5038822256184725, "max_drawdown_strategy": 37.541106559741536, "total_return_benchmark": 23.771273608317433, "annualized_return_benchmark": 3.974168668575251, "volatility_benchmark": 21.240178315462327, "sharpe_ratio_benchmark": 0.08372707391107771, "sortino_ratio_benchmark": 0.12303135167064605, "total_ari_excess_return": 134.29872639168258, "total_geo_excess_return": 112.77007830509902, "annualized_alpha": 14.94212765692755, "beta": 1.0928928970086775, "information_ratio": 1.0467700144741747, "volatility_excess": 14.274508679381162, "sharpe_ratio_excess": 0.8826326958476504, "max_drawdown_excess": 25.78501797988837, "start_date": "2020-05-12", "end_date": "2025-08-22", "days": 1379}, "daily": {"total_return_strategy": 5.068805471867122, "total_return_benchmark": 3.8711150219910895, "total_ari_excess_return": 1.1976904498760321, "start_date": "2025-08-22", "end_date": "2025-08-22"}, "weekly": {"total_return_strategy": 5.068805471867122, "annualized_return_strategy": 697.8098264090085, "volatility_strategy": NaN, "sharpe_ratio_strategy": NaN, "sortino_ratio_strategy": 0, "calmar_ratio_strategy": 0, "max_drawdown_strategy": 0.0, "total_return_benchmark": 3.8711150219910895, "annualized_return_benchmark": 392.9255542466297, "volatility_benchmark": NaN, "sharpe_ratio_benchmark": NaN, "sortino_ratio_benchmark": 0, "total_ari_excess_return": 1.1976904498760321, "total_geo_excess_return": 1.1976904498760321, "annualized_alpha": 304.8842721623788, "beta": 0, "information_ratio": NaN, "volatility_excess": NaN, "sharpe_ratio_excess": NaN, "max_drawdown_excess": 0.0, "start_date": "2025-08-15", "end_date": "2025-08-22", "days": 6}};
 
             // 检查数据是否存在
-            if (!chartConfig || !indicatorsData) {
+            if (!chartConfig || !allData) {
                 console.error("图表或指标数据未能正确加载，请检查后端模板变量。");
                 return;
             }
@@ -27301,9 +27362,34 @@
             // 简化获取元素的函数
             const el = (id) => document.getElementById(id);
 
+            // 填充摘要
+            const populateSummaryCards = () => {
+                const periods = ['daily', 'weekly', '1m', '3m', 'ytd', 'all'];
+                periods.forEach(period => {
+                    const data = allData[period];
+                    if (!data) return;
+
+                    const formatDateRange = (start, end) => (start === end) ? start : `${start} ~ ${end}`;
+                    el(`summary-date-${period}`).innerText = formatDateRange(data.start_date, data.end_date);
+
+                    // 统一处理渲染逻辑
+                    ['strategy', 'benchmark', 'excess'].forEach(type => {
+                        let key, value;
+                        if (type === 'strategy') key = 'total_return_strategy';
+                        if (type === 'benchmark') key = 'total_return_benchmark';
+                        if (type === 'excess') key = 'total_ari_excess_return';
+
+                        value = data[key];
+                        const element = el(`summary-${type}-${period}`);
+                        const icon = value >= 0 ? '<span class="icon positive">▲</span>' : '<span class="icon negative">▼</span>';
+                        element.innerHTML = `${icon} ${value.toFixed(2)}%`;
+                    });
+                });
+            };
+
             // 更新指标数据的核心函数
             const updateIndicators = (period) => {
-                const data = indicatorsData[period];
+                const data = allData[period];
                 if (!data) {
                     console.error(`未找到时间段 "${period}" 的数据`);
                     return;
@@ -27352,9 +27438,8 @@
             });
 
             // 页面加载后，默认显示"成立以来"的数据
-            if (indicatorsData && indicatorsData.all) {
-                updateIndicators('all');
-            }
+            populateSummaryCards();
+            updateIndicators('all');
         });
     </script>
 </body>

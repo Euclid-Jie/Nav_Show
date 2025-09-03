@@ -223,9 +223,107 @@
 <body>
     <div class="container">
         <h1>策略业绩报告</h1>
+
         <div class="summary-cards">
-            {{ SUMMARY_CARDS_HTML }}
+            <div class="card">
+                <p class="period-title">当日</p>
+                <p class="date-range" id="summary-date-daily">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-daily">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-daily">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-daily">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">近一周</p>
+                <p class="date-range" id="summary-date-weekly">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-weekly">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-weekly">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-weekly">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">近一月</p>
+                <p class="date-range" id="summary-date-1m">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-1m">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-1m">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-1m">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">近三月</p>
+                <p class="date-range" id="summary-date-3m">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-3m">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-3m">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-3m">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">今年以来</p>
+                <p class="date-range" id="summary-date-ytd">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-ytd">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-ytd">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-ytd">--</p>
+                </div>
+            </div>
+            <div class="card">
+                <p class="period-title">成立以来</p>
+                <p class="date-range" id="summary-date-all">--</p>
+                <div class="metric">
+                    <p>策略收益</p>
+                    <p class="value" id="summary-strategy-all">--</p>
+                </div>
+                <div class="metric">
+                    <p>基准收益</p>
+                    <p class="value" id="summary-benchmark-all">--</p>
+                </div>
+                <div class="metric">
+                    <p>超额收益</p>
+                    <p class="value" id="summary-excess-all">--</p>
+                </div>
+            </div>
         </div>
+
+
         <div class="chart-section">
             <div id="chart-container"></div>
         </div>
@@ -325,15 +423,14 @@
         </div>
     </div>
 
-    <!-- 修复后的完整脚本 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // 这些变量将在你的后端模板引擎中被替换
             const chartConfig = '{{ CHART_CONFIG_JSON }}';
-            const indicatorsData = '{{ ALL_INDICATORS_JSON }}';
+            const allData = '{{ ALL_DATA_JSON }}';
 
             // 检查数据是否存在
-            if (!chartConfig || !indicatorsData) {
+            if (!chartConfig || !allData) {
                 console.error("图表或指标数据未能正确加载，请检查后端模板变量。");
                 return;
             }
@@ -346,9 +443,34 @@
             // 简化获取元素的函数
             const el = (id) => document.getElementById(id);
 
+            // 填充摘要
+            const populateSummaryCards = () => {
+                const periods = ['daily', 'weekly', '1m', '3m', 'ytd', 'all'];
+                periods.forEach(period => {
+                    const data = allData[period];
+                    if (!data) return;
+
+                    const formatDateRange = (start, end) => (start === end) ? start : `${start} ~ ${end}`;
+                    el(`summary-date-${period}`).innerText = formatDateRange(data.start_date, data.end_date);
+
+                    // 统一处理渲染逻辑
+                    ['strategy', 'benchmark', 'excess'].forEach(type => {
+                        let key, value;
+                        if (type === 'strategy') key = 'total_return_strategy';
+                        if (type === 'benchmark') key = 'total_return_benchmark';
+                        if (type === 'excess') key = 'total_ari_excess_return';
+
+                        value = data[key];
+                        const element = el(`summary-${type}-${period}`);
+                        const icon = value >= 0 ? '<span class="icon positive">▲</span>' : '<span class="icon negative">▼</span>';
+                        element.innerHTML = `${icon} ${value.toFixed(2)}%`;
+                    });
+                });
+            };
+
             // 更新指标数据的核心函数
             const updateIndicators = (period) => {
-                const data = indicatorsData[period];
+                const data = allData[period];
                 if (!data) {
                     console.error(`未找到时间段 "${period}" 的数据`);
                     return;
@@ -397,9 +519,8 @@
             });
 
             // 页面加载后，默认显示"成立以来"的数据
-            if (indicatorsData && indicatorsData.all) {
-                updateIndicators('all');
-            }
+            populateSummaryCards();
+            updateIndicators('all');
         });
     </script>
 </body>
