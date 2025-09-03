@@ -258,8 +258,8 @@
                     </div>
                     <div class="indicator-card-row">
                         <div class="indicator-card full-width">
-                            <p class="metric-title">超额收益 (几何)</p>
-                            <p class="metric-value" id="excess_return"></p>
+                            <p class="metric-title">超额收益 (算术)</p>
+                            <p class="metric-value" id="total_ari_excess_return"></p>
                             <p class="metric-benchmark" id="annualized_alpha"></p>
                         </div>
                     </div>
@@ -315,7 +315,7 @@
                 el('total_return_benchmark').innerText = `基准: ${data.total_return_benchmark.toFixed(2)}%`;
                 el('annualized_return_strategy').innerText = `${data.annualized_return_strategy.toFixed(2)}%`;
                 el('annualized_return_benchmark').innerText = `基准: ${data.annualized_return_benchmark.toFixed(2)}%`;
-                el('excess_return').innerText = `${data.excess_return.toFixed(2)}%`;
+                el('total_ari_excess_return').innerText = `${data.total_ari_excess_return.toFixed(2)}%`;
                 el('annualized_alpha').innerText = `年化: ${data.annualized_alpha.toFixed(2)}%`;
                 el('volatility_strategy').innerText = `${data.volatility_strategy.toFixed(2)}%`;
                 el('volatility_benchmark').innerText = `基准: ${data.volatility_benchmark.toFixed(2)}%`;
