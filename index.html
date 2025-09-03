@@ -162,8 +162,10 @@
 
         .indicators-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            grid-template-columns: repeat(3, 1fr);
+            /* 改为三列 */
+            gap: 20px;
+            /* 减小间距 */
         }
 
         .indicator-column h3 {
@@ -174,11 +176,14 @@
             color: #333;
         }
 
-        .indicator-card-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
+        .indicator-column .column-subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            height: 15px;
         }
+
 
         .indicator-card {
             background-color: #f8f9fa;
@@ -187,10 +192,7 @@
             flex: 1;
             text-align: left;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-        }
-
-        .indicator-card.full-width {
-            flex-basis: 100%;
+            margin-bottom: 15px;
         }
 
         p.metric-title {
@@ -220,7 +222,7 @@
 
 <body>
     <div class="container">
-        <h1>我的策略业绩报告</h1>
+        <h1>策略业绩报告</h1>
         <div class="summary-cards">
             
         <div class="card">
@@ -265,7 +267,7 @@
         </div>
         <div class="indicators-section">
             <div class="indicators-header">
-                <h2>投资组合指标分析<p id="indicator-date-range" class="date-range-header"></p>
+                <h2>投资组合指标分析<p id="indicator-date-range" class="date-range-header">(成立以来)</p>
                 </h2>
                 <div class="period-buttons">
                     <button class="period-btn" data-period="1m">近一月</button>
@@ -273,67 +275,96 @@
                     <button class="period-btn" data-period="6m">近六月</button>
                     <button class="period-btn" data-period="ytd">今年以来</button>
                     <button class="period-btn" data-period="1y">近一年</button>
-                    <button class="period-btn" data-period="all">成立以来</button>
+                    <button class="period-btn active" data-period="all">成立以来</button>
                 </div>
             </div>
+
             <div class="indicators-grid">
+                <!-- 第一列: 核心表现 -->
                 <div class="indicator-column">
-                    <h3>收益指标</h3>
-                    <p style="font-size:12px;color:#ffffff;margin-top:-10px;margin-bottom:10px;">11  </p>
-                    <div class="indicator-card-row">
-                        <div class="indicator-card">
-                            <p class="metric-title">总收益率</p>
-                            <p class="metric-value" id="total_return_strategy"></p>
-                            <p class="metric-benchmark" id="total_return_benchmark"></p>
-                        </div>
-                        <div class="indicator-card">
-                            <p class="metric-title">年化收益率</p>
-                            <p class="metric-value" id="annualized_return_strategy"></p>
-                            <p class="metric-benchmark" id="annualized_return_benchmark"></p>
-                        </div>
+                    <h3>核心表现</h3>
+                    <p class="column-subtitle">策略与基准的绝对收益及风险</p>
+                    <div class="indicator-card">
+                        <p class="metric-title">总收益率</p>
+                        <p class="metric-value" id="total_return_strategy">--</p>
+                        <p class="metric-benchmark">基准: <span id="total_return_benchmark">--</span></p>
                     </div>
-                    <div class="indicator-card-row">
-                        <div class="indicator-card full-width">
-                            <p class="metric-title">超额收益 (几何)</p>
-                            <p class="metric-value" id="excess_return"></p>
-                            <p class="metric-benchmark" id="annualized_alpha"></p>
-                        </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">年化收益率</p>
+                        <p class="metric-value" id="annualized_return_strategy">--</p>
+                        <p class="metric-benchmark">基准: <span id="annualized_return_benchmark">--</span></p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">年化波动率</p>
+                        <p class="metric-value" id="volatility_strategy">--</p>
+                        <p class="metric-benchmark">基准: <span id="volatility_benchmark">--</span></p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">策略最大回撤</p>
+                        <p class="metric-value drawdown" id="max_drawdown_strategy">--</p>
+                        <p class="metric-benchmark">衡量策略历史最大跌幅</p>
                     </div>
                 </div>
+
+                <!-- 第二列: 风险调整后收益 -->
                 <div class="indicator-column">
-                    <h3>风险指标</h3>
-                    <p style="font-size:12px;color:#888;margin-top:-10px;margin-bottom:10px;">注：无风险利率采用对应三个月期SHIBOR均值</p>
-                    <div class="indicator-card-row">
-                        <div class="indicator-card">
-                            <p class="metric-title">波动率</p>
-                            <p class="metric-value" id="volatility_strategy"></p>
-                            <p class="metric-benchmark" id="volatility_benchmark"></p>
-                        </div>
-                        <div class="indicator-card">
-                            <p class="metric-title">夏普比率</p>
-                            <p class="metric-value" id="sharpe_ratio_strategy"></p>
-                            <p class="metric-benchmark" id="sharpe_ratio_benchmark"></p>
-                        </div>
+                    <h3>风险调整后收益</h3>
+                    <p class="column-subtitle">注：无风险利率采用对应期SHIBOR均值</p>
+                    <div class="indicator-card">
+                        <p class="metric-title">夏普比率 (Sharpe Ratio)</p>
+                        <p class="metric-value" id="sharpe_ratio_strategy">--</p>
+                        <p class="metric-benchmark">基准: <span id="sharpe_ratio_benchmark">--</span></p>
                     </div>
-                    <div class="indicator-card-row">
-                        <div class="indicator-card">
-                            <p class="metric-title">策略最大回撤</p>
-                            <p class="metric-value drawdown" id="max_drawdown_strategy"></p>
-                            <p class="metric-benchmark">基于策略收益计算</p>
-                        </div>
-                        <div class="indicator-card">
-                            <p class="metric-title">信息比率</p>
-                            <p class="metric-value" id="information_ratio"></p>
-                            <p class="metric-benchmark">超额收益风险调整后回报</p>
-                        </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">索提诺比率 (Sortino Ratio)</p>
+                        <p class="metric-value" id="sortino_ratio_strategy">--</p>
+                        <p class="metric-benchmark">基准: <span id="sortino_ratio_benchmark">--</span></p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">科尔马比率 (Calmar Ratio)</p>
+                        <p class="metric-value" id="calmar_ratio_strategy">--</p>
+                        <p class="metric-benchmark">年化收益 / 最大回撤</p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">信息比率 (Information Ratio)</p>
+                        <p class="metric-value" id="information_ratio">--</p>
+                        <p class="metric-benchmark">主动管理能力的衡量</p>
+                    </div>
+                </div>
+
+                <!-- 第三列: 相对基准分析 -->
+                <div class="indicator-column">
+                    <h3>相对基准分析</h3>
+                    <p class="column-subtitle">策略相对基准的超额表现</p>
+                    <div class="indicator-card">
+                        <p class="metric-title">年化Alpha</p>
+                        <p class="metric-value" id="annualized_alpha">--</p>
+                        <p class="metric-benchmark">策略超越基准的年化回报</p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">Beta系数</p>
+                        <p class="metric-value" id="beta">--</p>
+                        <p class="metric-benchmark">对基准波动的敏感度</p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">跟踪误差</p>
+                        <p class="metric-value" id="volatility_excess">--</p>
+                        <p class="metric-benchmark">超额收益的年化波动率</p>
+                    </div>
+                    <div class="indicator-card">
+                        <p class="metric-title">超额收益最大回撤</p>
+                        <p class="metric-value drawdown" id="max_drawdown_excess">--</p>
+                        <p class="metric-benchmark">超额收益曲线的最大跌幅</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 修复后的完整脚本 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // 这些变量将在你的后端模板引擎中被替换
             const chartConfig = {
     "animation": true,
     "animationThreshold": 2000,
@@ -27254,32 +27285,62 @@
         }
     ]
 };
-            const indicatorsData = {"1m": {"total_return_strategy": 9.658366618509383, "annualized_return_strategy": 10325.702883975482, "volatility_strategy": 36.720145004143255, "sharpe_ratio_strategy": 281.1576045415969, "max_drawdown_strategy": 0.5821364833857423, "total_return_benchmark": 8.306191887892123, "annualized_return_benchmark": 5478.605061605381, "volatility_benchmark": 39.34572378842967, "sharpe_ratio_benchmark": 139.20318799740903, "excess_return": 1.3521747306172616, "annualized_alpha": 4847.097822370101, "information_ratio": 242.40055140738974, "start_date": "2025-07-25", "end_date": "2025-08-22", "days": 5}, "3m": {"total_return_strategy": 26.921752815619925, "annualized_return_strategy": 4172.607154370143, "volatility_strategy": 35.625526930643424, "sharpe_ratio_strategy": 117.07935918312549, "max_drawdown_strategy": 2.1688686839986704, "total_return_benchmark": 20.693335887237808, "annualized_return_benchmark": 1834.246566109803, "volatility_benchmark": 29.79070426409726, "sharpe_ratio_benchmark": 61.51762170823278, "excess_return": 6.228416928382119, "annualized_alpha": 2338.3605882603397, "information_ratio": 126.23777509754419, "start_date": "2025-05-23", "end_date": "2025-08-22", "days": 16}, "6m": {"total_return_strategy": 23.786454336147365, "annualized_return_strategy": 327.73925734118467, "volatility_strategy": 38.80437908744571, "sharpe_ratio_strategy": 8.401893031894932, "max_drawdown_strategy": 10.049385016772261, "total_return_benchmark": 12.868112066009218, "annualized_return_benchmark": 128.06199063675754, "volatility_benchmark": 29.15181722735668, "sharpe_ratio_benchmark": 4.334308718113812, "excess_return": 10.918342270138147, "annualized_alpha": 199.67726670442713, "information_ratio": 11.23525733667194, "start_date": "2025-02-24", "end_date": "2025-08-22", "days": 37}, "ytd": {"total_return_strategy": 44.277967238776775, "annualized_return_strategy": 289.0241169141183, "volatility_strategy": 34.769627098279294, "sharpe_ratio_strategy": 8.26344152682471, "max_drawdown_strategy": 10.049385016772261, "total_return_benchmark": 23.026894105817487, "annualized_return_benchmark": 115.54087148332192, "volatility_benchmark": 24.95611001866683, "sharpe_ratio_benchmark": 4.5613493016415045, "excess_return": 21.251073132959284, "annualized_alpha": 173.48324543079636, "information_ratio": 11.024394204602823, "start_date": "2025-01-02", "end_date": "2025-08-22", "days": 68}, "1y": {"total_return_strategy": 109.8130081300813, "annualized_return_strategy": 233.6085780830004, "volatility_strategy": 42.0036900769995, "sharpe_ratio_strategy": 5.519960158944344, "max_drawdown_strategy": 16.82790970389916, "total_return_benchmark": 50.50277503300802, "annualized_return_benchmark": 94.38063926940423, "volatility_benchmark": 31.638884417255024, "sharpe_ratio_benchmark": 2.9277504136513914, "excess_return": 59.31023309707329, "annualized_alpha": 139.22793881359615, "information_ratio": 8.298869483091678, "start_date": "2024-08-22", "end_date": "2025-08-22", "days": 155}, "all": {"total_return_strategy": 158.07000000000002, "annualized_return_strategy": 22.090418818839417, "volatility_strategy": 27.17946168416835, "sharpe_ratio_strategy": 0.7319728536623553, "max_drawdown_strategy": 37.541106559741536, "total_return_benchmark": 23.771273608317433, "annualized_return_benchmark": 4.592108433145414, "volatility_benchmark": 21.240178315462327, "sharpe_ratio_benchmark": 0.1128200389225964, "excess_return": 134.29872639168258, "annualized_alpha": 17.498310385694005, "information_ratio": 1.2258432691956305, "start_date": "2020-05-12", "end_date": "2025-08-22", "days": 1197}};
+            const indicatorsData = {"1m": {"total_return_strategy": 9.658366618509383, "annualized_return_strategy": 10325.702883975482, "volatility_strategy": 36.720145004143255, "sharpe_ratio_strategy": 281.1576045415969, "sortino_ratio_strategy": NaN, "calmar_ratio_strategy": 17737.597932224668, "max_drawdown_strategy": 0.5821364833857423, "total_return_benchmark": 8.306191887892123, "annualized_return_benchmark": 5478.605061605381, "volatility_benchmark": 39.34572378842967, "sharpe_ratio_benchmark": 139.20318799740903, "sortino_ratio_benchmark": NaN, "total_ari_excess_return": 1.3521747306172616, "total_geo_excess_return": 1.2368855940001922, "annualized_alpha": 4847.097822370101, "beta": 0.8063524056802049, "information_ratio": 242.40055140738974, "volatility_excess": 19.996232658001844, "sharpe_ratio_excess": 4.21366199618823, "max_drawdown_excess": 1.555195322771763, "start_date": "2025-07-25", "end_date": "2025-08-22", "days": 5}, "3m": {"total_return_strategy": 26.921752815619925, "annualized_return_strategy": 4172.607154370143, "volatility_strategy": 35.625526930643424, "sharpe_ratio_strategy": 117.07935918312549, "sortino_ratio_strategy": 469.816868473559, "calmar_ratio_strategy": 1923.8634340356869, "max_drawdown_strategy": 2.1688686839986704, "total_return_benchmark": 20.693335887237808, "annualized_return_benchmark": 1834.246566109803, "volatility_benchmark": 29.79070426409726, "sharpe_ratio_benchmark": 61.51762170823278, "sortino_ratio_benchmark": 165.44314546894987, "total_ari_excess_return": 6.228416928382119, "total_geo_excess_return": 5.2338001822176405, "annualized_alpha": 2338.3605882603397, "beta": 1.0217318772817108, "information_ratio": 126.23777509754419, "volatility_excess": 18.523461669484302, "sharpe_ratio_excess": 6.571977556698306, "max_drawdown_excess": 1.5551953227717519, "start_date": "2025-05-23", "end_date": "2025-08-22", "days": 16}, "6m": {"total_return_strategy": 23.786454336147365, "annualized_return_strategy": 327.73925734118467, "volatility_strategy": 38.80437908744571, "sharpe_ratio_strategy": 8.401893031894932, "sortino_ratio_strategy": 10.781863431272784, "calmar_ratio_strategy": 32.61286703556418, "max_drawdown_strategy": 10.049385016772261, "total_return_benchmark": 12.868112066009218, "annualized_return_benchmark": 128.06199063675754, "volatility_benchmark": 29.15181722735668, "sharpe_ratio_benchmark": 4.334308718113812, "sortino_ratio_benchmark": 6.863981773132786, "total_ari_excess_return": 10.918342270138147, "total_geo_excess_return": 9.972274419762893, "annualized_alpha": 199.67726670442713, "beta": 1.2000956112840888, "information_ratio": 11.23525733667194, "volatility_excess": 17.772380348839846, "sharpe_ratio_excess": 5.027577206118638, "max_drawdown_excess": 2.812553889678593, "start_date": "2025-02-24", "end_date": "2025-08-22", "days": 37}, "ytd": {"total_return_strategy": 44.277967238776775, "annualized_return_strategy": 289.0241169141183, "volatility_strategy": 34.769627098279294, "sharpe_ratio_strategy": 8.26344152682471, "sortino_ratio_strategy": 11.338652600924048, "calmar_ratio_strategy": 28.76037851388336, "max_drawdown_strategy": 10.049385016772261, "total_return_benchmark": 23.026894105817487, "annualized_return_benchmark": 115.54087148332192, "volatility_benchmark": 24.95611001866683, "sharpe_ratio_benchmark": 4.5613493016415045, "sortino_ratio_benchmark": 7.33302608256387, "total_ari_excess_return": 21.251073132959284, "total_geo_excess_return": 17.857339418342267, "annualized_alpha": 173.48324543079636, "beta": 1.2717438700553683, "information_ratio": 11.024394204602823, "volatility_excess": 15.73630643200013, "sharpe_ratio_excess": 5.2192906269628265, "max_drawdown_excess": 2.8125538896785596, "start_date": "2025-01-02", "end_date": "2025-08-22", "days": 68}, "1y": {"total_return_strategy": 109.8130081300813, "annualized_return_strategy": 233.6085780830004, "volatility_strategy": 42.0036900769995, "sharpe_ratio_strategy": 5.519960158944344, "sortino_ratio_strategy": 8.325078746414702, "calmar_ratio_strategy": 13.882210101761567, "max_drawdown_strategy": 16.82790970389916, "total_return_benchmark": 50.50277503300802, "annualized_return_benchmark": 94.38063926940423, "volatility_benchmark": 31.638884417255024, "sharpe_ratio_benchmark": 2.9277504136513914, "sortino_ratio_benchmark": 4.791678618267599, "total_ari_excess_return": 59.31023309707329, "total_geo_excess_return": 41.55705134136518, "annualized_alpha": 139.22793881359615, "beta": 1.2406708130506097, "information_ratio": 8.298869483091678, "volatility_excess": 16.77673556588191, "sharpe_ratio_excess": 4.42270527891594, "max_drawdown_excess": 5.993930570549177, "start_date": "2024-08-22", "end_date": "2025-08-22", "days": 155}, "all": {"total_return_strategy": 158.07000000000002, "annualized_return_strategy": 22.090418818839417, "volatility_strategy": 27.17946168416835, "sharpe_ratio_strategy": 0.7319728536623553, "sortino_ratio_strategy": 0.9671434244408854, "calmar_ratio_strategy": 0.5884328098769689, "max_drawdown_strategy": 37.541106559741536, "total_return_benchmark": 23.771273608317433, "annualized_return_benchmark": 4.592108433145414, "volatility_benchmark": 21.240178315462327, "sharpe_ratio_benchmark": 0.1128200389225964, "sortino_ratio_benchmark": 0.16578152365534243, "total_ari_excess_return": 134.29872639168258, "total_geo_excess_return": 112.77007830509902, "annualized_alpha": 17.498310385694005, "beta": 1.0928928970086775, "information_ratio": 1.2258432691956305, "volatility_excess": 14.274508679381162, "sharpe_ratio_excess": 1.0531269160660806, "max_drawdown_excess": 25.78501797988837, "start_date": "2020-05-12", "end_date": "2025-08-22", "days": 1197}};
 
+            // 检查数据是否存在
+            if (!chartConfig || !indicatorsData) {
+                console.error("图表或指标数据未能正确加载，请检查后端模板变量。");
+                return;
+            }
+
+            // 初始化 ECharts 图表
             const myChart = echarts.init(document.getElementById('chart-container'));
             myChart.setOption(chartConfig);
             window.addEventListener('resize', () => myChart.resize());
 
+            // 简化获取元素的函数
             const el = (id) => document.getElementById(id);
+
+            // 更新指标数据的核心函数
             const updateIndicators = (period) => {
                 const data = indicatorsData[period];
-                if (!data) return;
+                if (!data) {
+                    console.error(`未找到时间段 "${period}" 的数据`);
+                    return;
+                }
 
-                el('indicator-date-range').innerText = `${data.start_date} 至 ${data.end_date} (${data.days}个交易日)`;
-                el('total_return_strategy').innerText = `${data.total_return_strategy.toFixed(2)}%`;
-                el('total_return_benchmark').innerText = `基准: ${data.total_return_benchmark.toFixed(2)}%`;
-                el('annualized_return_strategy').innerText = `${data.annualized_return_strategy.toFixed(2)}%`;
-                el('annualized_return_benchmark').innerText = `基准: ${data.annualized_return_benchmark.toFixed(2)}%`;
-                el('excess_return').innerText = `${data.excess_return.toFixed(2)}%`;
-                el('annualized_alpha').innerText = `年化: ${data.annualized_alpha.toFixed(2)}%`;
-                el('volatility_strategy').innerText = `${data.volatility_strategy.toFixed(2)}%`;
-                el('volatility_benchmark').innerText = `基准: ${data.volatility_benchmark.toFixed(2)}%`;
-                el('sharpe_ratio_strategy').innerText = data.sharpe_ratio_strategy.toFixed(2);
-                el('sharpe_ratio_benchmark').innerText = `基准: ${data.sharpe_ratio_benchmark.toFixed(2)}`;
-                el('max_drawdown_strategy').innerText = `${data.max_drawdown_strategy.toFixed(2)}%`;
-                el('information_ratio').innerText = data.information_ratio.toFixed(2);
+                // 格式化函数，方便复用
+                const formatPercent = (value) => `${value.toFixed(2)}%`;
+                const formatNumber = (value) => value.toFixed(2);
+
+                // --- 更新标题日期范围 ---
+                el('indicator-date-range').innerText = `(${data.start_date} 至 ${data.end_date}, ${data.days}个交易日)`;
+
+                // --- 更新第一列: 核心表现 ---
+                el('total_return_strategy').innerText = formatPercent(data.total_return_strategy);
+                el('total_return_benchmark').innerText = formatPercent(data.total_return_benchmark);
+                el('annualized_return_strategy').innerText = formatPercent(data.annualized_return_strategy);
+                el('annualized_return_benchmark').innerText = formatPercent(data.annualized_return_benchmark);
+                el('volatility_strategy').innerText = formatPercent(data.volatility_strategy);
+                el('volatility_benchmark').innerText = formatPercent(data.volatility_benchmark);
+                el('max_drawdown_strategy').innerText = formatPercent(data.max_drawdown_strategy);
+
+                // --- 更新第二列: 风险调整后收益 ---
+                el('sharpe_ratio_strategy').innerText = formatNumber(data.sharpe_ratio_strategy);
+                el('sharpe_ratio_benchmark').innerText = formatNumber(data.sharpe_ratio_benchmark);
+                el('sortino_ratio_strategy').innerText = formatNumber(data.sortino_ratio_strategy);
+                el('sortino_ratio_benchmark').innerText = formatNumber(data.sortino_ratio_benchmark);
+                el('calmar_ratio_strategy').innerText = formatNumber(data.calmar_ratio_strategy);
+                el('information_ratio').innerText = formatNumber(data.information_ratio);
+
+                // --- 更新第三列: 相对基准分析 ---
+                el('annualized_alpha').innerText = formatPercent(data.annualized_alpha);
+                el('beta').innerText = formatNumber(data.beta);
+                el('volatility_excess').innerText = formatPercent(data.volatility_excess);
+                el('max_drawdown_excess').innerText = formatPercent(data.max_drawdown_excess);
             };
 
+            // 按钮点击事件绑定
             const buttons = document.querySelectorAll('.period-btn');
             buttons.forEach(button => {
                 button.addEventListener('click', (event) => {
@@ -27290,8 +27351,10 @@
                 });
             });
 
-            document.querySelector('.period-btn[data-period="all"]').classList.add('active');
-            updateIndicators('all');
+            // 页面加载后，默认显示"成立以来"的数据
+            if (indicatorsData && indicatorsData.all) {
+                updateIndicators('all');
+            }
         });
     </script>
 </body>

@@ -236,4 +236,4 @@ def generate_performance_page_from_template(
 
 if __name__ == "__main__":
     rate_interbank_df = get_rate_interbank_df()
-    generate_performance_page_from_template(rate_interbank_df=rate_interbank_df)
+    generate_performance_page_from_template(template_path="template_new.html",rate_interbank_df=rate_interbank_df)
