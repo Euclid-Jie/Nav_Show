@@ -18,6 +18,7 @@ def calculate_rf_rate(rate_interbank_df, start_date, end_date):
     mask = (rate_interbank_df["报告日"] >= start_date) & (rate_interbank_df["报告日"] <= end_date)
     return rate_interbank_df.loc[mask, "利率"].mean()
 
+
 def calculate_indicators(df_period, rate_interbank_df):
     """
     Calculates key performance indicators for a given period of data.
@@ -36,17 +37,21 @@ def calculate_indicators(df_period, rate_interbank_df):
                 "annualized_return_strategy",
                 "volatility_strategy",
                 "sharpe_ratio_strategy",
+                "sortino_ratio_strategy",
+                "calmar_ratio_strategy",
                 "max_drawdown_strategy",
                 "max_drawdown_excess",
                 "total_return_benchmark",
                 "annualized_return_benchmark",
                 "volatility_benchmark",
-                "volatility_excess",
                 "sharpe_ratio_benchmark",
+                "sortino_ratio_benchmark",
+                "volatility_excess",
                 "total_ari_excess_return",
                 "total_geo_excess_return",
                 "sharpe_ratio_excess",
                 "annualized_alpha",
+                "beta",
                 "information_ratio",
                 "start_date",
                 "end_date",
@@ -85,6 +90,19 @@ def calculate_indicators(df_period, rate_interbank_df):
         else 0
     )
 
+    # Sortino Ratio for Strategy (considers only downside volatility)
+    negative_returns_strategy = strategy_returns[strategy_returns < 0]
+    downside_deviation_strategy = (
+        negative_returns_strategy.std() * (252**0.5)
+        if not negative_returns_strategy.empty
+        else 0
+    )
+    sortino_ratio_strategy = (
+        (annualized_return_strategy - risk_free_rate) / downside_deviation_strategy
+        if downside_deviation_strategy != 0
+        else 0
+    )
+
     # --- Benchmark Calculations ---
     benchmark_returns = df_period["Benchmark_Cumulative_Return"].pct_change().dropna()
     total_return_benchmark = (
@@ -103,6 +121,19 @@ def calculate_indicators(df_period, rate_interbank_df):
         else 0
     )
 
+    # Sortino Ratio for Benchmark
+    negative_returns_benchmark = benchmark_returns[benchmark_returns < 0]
+    downside_deviation_benchmark = (
+        negative_returns_benchmark.std() * (252**0.5)
+        if not negative_returns_benchmark.empty
+        else 0
+    )
+    sortino_ratio_benchmark = (
+        (annualized_return_benchmark - risk_free_rate) / downside_deviation_benchmark
+        if downside_deviation_benchmark != 0
+        else 0
+    )
+
     # --- Alpha / Excess Return Calculations ---
     total_ari_excess_return = total_return_strategy - total_return_benchmark
     annualized_alpha = annualized_return_strategy - annualized_return_benchmark
@@ -112,6 +143,14 @@ def calculate_indicators(df_period, rate_interbank_df):
         {"strategy": strategy_returns, "benchmark": benchmark_returns}
     ).dropna()
     excess_daily_returns = aligned_returns["strategy"] - aligned_returns["benchmark"]
+
+    # Beta calculation (market sensitivity)
+    if not aligned_returns.empty and len(aligned_returns) > 1:
+        covariance = aligned_returns["strategy"].cov(aligned_returns["benchmark"])
+        variance = aligned_returns["benchmark"].var()
+        beta = covariance / variance if variance != 0 else 0
+    else:
+        beta = 0
 
     if not excess_daily_returns.empty:
         # Geometric excess return
@@ -149,6 +188,13 @@ def calculate_indicators(df_period, rate_interbank_df):
     ) - 1
     max_drawdown_strategy = df_period["Drawdown_Strategy"].min()
 
+    # Calmar Ratio for Strategy (return vs. drawdown)
+    calmar_ratio_strategy = (
+        annualized_return_strategy / abs(max_drawdown_strategy)
+        if max_drawdown_strategy != 0
+        else 0
+    )
+
     # Excess Return Max Drawdown
     if not excess_daily_returns.empty:
         cumulative_excess_series = (1 + excess_daily_returns).cumprod()
@@ -164,16 +210,20 @@ def calculate_indicators(df_period, rate_interbank_df):
         "annualized_return_strategy": annualized_return_strategy * 100,
         "volatility_strategy": volatility_strategy * 100,
         "sharpe_ratio_strategy": sharpe_ratio_strategy,
+        "sortino_ratio_strategy": sortino_ratio_strategy,
+        "calmar_ratio_strategy": calmar_ratio_strategy,
         "max_drawdown_strategy": abs(max_drawdown_strategy * 100),
         # Benchmark Metrics
         "total_return_benchmark": total_return_benchmark * 100,
         "annualized_return_benchmark": annualized_return_benchmark * 100,
         "volatility_benchmark": volatility_benchmark * 100,
         "sharpe_ratio_benchmark": sharpe_ratio_benchmark,
+        "sortino_ratio_benchmark": sortino_ratio_benchmark,
         # Excess Return Metrics
         "total_ari_excess_return": total_ari_excess_return * 100,
         "total_geo_excess_return": total_geo_excess_return * 100,
         "annualized_alpha": annualized_alpha * 100,
+        "beta": beta,
         "information_ratio": information_ratio,
         "volatility_excess": volatility_excess * 100,
         "sharpe_ratio_excess": sharpe_ratio_excess,
