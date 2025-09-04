@@ -72,7 +72,8 @@ def calculate_indicators(df_period, rate_interbank_df):
     end_date_obj = df_period.index[-1]
     start_date = df_period.index[0].strftime("%Y-%m-%d")
     end_date = df_period.index[-1].strftime("%Y-%m-%d")
-    days = int(np.busday_count(start_date_obj.date(), end_date_obj.date()) + 1)
+    custom_holidays = np.loadtxt("Chinese_special_holiday.txt", dtype="datetime64[D]")
+    days = int(np.busday_count(start_date_obj.date(), end_date_obj.date(), holidays=custom_holidays) + 1)
     years = days / 252 if days > 0 else 0
 
     # Risk-free rate (assumed to be annualized)
