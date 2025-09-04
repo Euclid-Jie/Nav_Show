@@ -20,7 +20,39 @@
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
         }
+
+        .lang-switcher {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            display: flex;
+            gap: 5px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            padding: 4px;
+            z-index: 10;
+        }
+
+        .lang-btn {
+            background-color: transparent;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            color: #495057;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .lang-btn.active {
+            background-color: #ffffff;
+            color: #007bff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
 
         h1,
         h2 {
@@ -163,9 +195,7 @@
         .indicators-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            /* 改为三列 */
             gap: 20px;
-            /* 减小间距 */
         }
 
         .indicator-column h3 {
@@ -222,102 +252,106 @@
 
 <body>
     <div class="container">
-        <h1>策略业绩报告</h1>
+        <div class="lang-switcher">
+            <button id="lang-zh" class="lang-btn active">中文</button>
+            <button id="lang-en" class="lang-btn">English</button>
+        </div>
+        <h1 data-lang-key="mainTitle">策略业绩报告</h1>
 
         <div class="summary-cards">
             <div class="card">
-                <p class="period-title">当日</p>
+                <p class="period-title" data-lang-key="daily">当日</p>
                 <p class="date-range" id="summary-date-daily">--</p>
                 <div class="metric">
-                    <p>策略收益</p>
+                    <p data-lang-key="strategyReturn">策略收益</p>
                     <p class="value" id="summary-strategy-daily">--</p>
                 </div>
                 <div class="metric">
-                    <p>基准收益</p>
+                    <p data-lang-key="benchmarkReturn">基准收益</p>
                     <p class="value" id="summary-benchmark-daily">--</p>
                 </div>
                 <div class="metric">
-                    <p>超额收益</p>
+                    <p data-lang-key="excessReturn">超额收益</p>
                     <p class="value" id="summary-excess-daily">--</p>
                 </div>
             </div>
             <div class="card">
-                <p class="period-title">近一周</p>
+                <p class="period-title" data-lang-key="weekly">近一周</p>
                 <p class="date-range" id="summary-date-weekly">--</p>
                 <div class="metric">
-                    <p>策略收益</p>
+                    <p data-lang-key="strategyReturn">策略收益</p>
                     <p class="value" id="summary-strategy-weekly">--</p>
                 </div>
                 <div class="metric">
-                    <p>基准收益</p>
+                    <p data-lang-key="benchmarkReturn">基准收益</p>
                     <p class="value" id="summary-benchmark-weekly">--</p>
                 </div>
                 <div class="metric">
-                    <p>超额收益</p>
+                    <p data-lang-key="excessReturn">超额收益</p>
                     <p class="value" id="summary-excess-weekly">--</p>
                 </div>
             </div>
             <div class="card">
-                <p class="period-title">近一月</p>
+                <p class="period-title" data-lang-key="monthly">近一月</p>
                 <p class="date-range" id="summary-date-1m">--</p>
                 <div class="metric">
-                    <p>策略收益</p>
+                    <p data-lang-key="strategyReturn">策略收益</p>
                     <p class="value" id="summary-strategy-1m">--</p>
                 </div>
                 <div class="metric">
-                    <p>基准收益</p>
+                    <p data-lang-key="benchmarkReturn">基准收益</p>
                     <p class="value" id="summary-benchmark-1m">--</p>
                 </div>
                 <div class="metric">
-                    <p>超额收益</p>
+                    <p data-lang-key="excessReturn">超额收益</p>
                     <p class="value" id="summary-excess-1m">--</p>
                 </div>
             </div>
             <div class="card">
-                <p class="period-title">近三月</p>
+                <p class="period-title" data-lang-key="threeMonth">近三月</p>
                 <p class="date-range" id="summary-date-3m">--</p>
                 <div class="metric">
-                    <p>策略收益</p>
+                    <p data-lang-key="strategyReturn">策略收益</p>
                     <p class="value" id="summary-strategy-3m">--</p>
                 </div>
                 <div class="metric">
-                    <p>基准收益</p>
+                    <p data-lang-key="benchmarkReturn">基准收益</p>
                     <p class="value" id="summary-benchmark-3m">--</p>
                 </div>
                 <div class="metric">
-                    <p>超额收益</p>
+                    <p data-lang-key="excessReturn">超额收益</p>
                     <p class="value" id="summary-excess-3m">--</p>
                 </div>
             </div>
             <div class="card">
-                <p class="period-title">今年以来</p>
+                <p class="period-title" data-lang-key="ytd">今年以来</p>
                 <p class="date-range" id="summary-date-ytd">--</p>
                 <div class="metric">
-                    <p>策略收益</p>
+                    <p data-lang-key="strategyReturn">策略收益</p>
                     <p class="value" id="summary-strategy-ytd">--</p>
                 </div>
                 <div class="metric">
-                    <p>基准收益</p>
+                    <p data-lang-key="benchmarkReturn">基准收益</p>
                     <p class="value" id="summary-benchmark-ytd">--</p>
                 </div>
                 <div class="metric">
-                    <p>超额收益</p>
+                    <p data-lang-key="excessReturn">超额收益</p>
                     <p class="value" id="summary-excess-ytd">--</p>
                 </div>
             </div>
             <div class="card">
-                <p class="period-title">成立以来</p>
+                <p class="period-title" data-lang-key="sinceInception">成立以来</p>
                 <p class="date-range" id="summary-date-all">--</p>
                 <div class="metric">
-                    <p>策略收益</p>
+                    <p data-lang-key="strategyReturn">策略收益</p>
                     <p class="value" id="summary-strategy-all">--</p>
                 </div>
                 <div class="metric">
-                    <p>基准收益</p>
+                    <p data-lang-key="benchmarkReturn">基准收益</p>
                     <p class="value" id="summary-benchmark-all">--</p>
                 </div>
                 <div class="metric">
-                    <p>超额收益</p>
+                    <p data-lang-key="excessReturn">超额收益</p>
                     <p class="value" id="summary-excess-all">--</p>
                 </div>
             </div>
@@ -329,94 +363,100 @@
         </div>
         <div class="indicators-section">
             <div class="indicators-header">
-                <h2>投资组合指标分析<p id="indicator-date-range" class="date-range-header">(成立以来)</p>
+                <h2><span data-lang-key="indicatorsTitle">投资组合指标分析</span>
+                    <p id="indicator-date-range" class="date-range-header">(成立以来)</p>
                 </h2>
                 <div class="period-buttons">
-                    <button class="period-btn" data-period="1m">近一月</button>
-                    <button class="period-btn" data-period="3m">近三月</button>
-                    <button class="period-btn" data-period="6m">近六月</button>
-                    <button class="period-btn" data-period="ytd">今年以来</button>
-                    <button class="period-btn" data-period="1y">近一年</button>
-                    <button class="period-btn active" data-period="all">成立以来</button>
+                    <button class="period-btn" data-period="1m" data-lang-key="btn1m">近一月</button>
+                    <button class="period-btn" data-period="3m" data-lang-key="btn3m">近三月</button>
+                    <button class="period-btn" data-period="6m" data-lang-key="btn6m">近六月</button>
+                    <button class="period-btn" data-period="ytd" data-lang-key="btnYtd">今年以来</button>
+                    <button class="period-btn" data-period="1y" data-lang-key="btn1y">近一年</button>
+                    <button class="period-btn active" data-period="all" data-lang-key="btnAll">成立以来</button>
                 </div>
             </div>
 
             <div class="indicators-grid">
                 <!-- 第一列: 核心表现 -->
                 <div class="indicator-column">
-                    <h3>核心表现</h3>
-                    <p class="column-subtitle">策略与基准的绝对收益及风险</p>
+                    <h3 data-lang-key="corePerformanceTitle">核心表现</h3>
+                    <p class="column-subtitle" data-lang-key="corePerformanceSubtitle">策略与基准的绝对收益及风险</p>
                     <div class="indicator-card">
-                        <p class="metric-title">总收益率</p>
+                        <p class="metric-title" data-lang-key="totalReturn">总收益率</p>
                         <p class="metric-value" id="total_return_strategy">--</p>
-                        <p class="metric-benchmark">基准: <span id="total_return_benchmark">--</span></p>
+                        <p class="metric-benchmark" id="total_return_benchmark_label">基准: <span
+                                id="total_return_benchmark">--</span></p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">年化收益率</p>
+                        <p class="metric-title" data-lang-key="annualizedReturn">年化收益率</p>
                         <p class="metric-value" id="annualized_return_strategy">--</p>
-                        <p class="metric-benchmark">基准: <span id="annualized_return_benchmark">--</span></p>
+                        <p class="metric-benchmark" id="annualized_return_benchmark_label">基准: <span
+                                id="annualized_return_benchmark">--</span></p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">年化波动率</p>
+                        <p class="metric-title" data-lang-key="annualizedVolatility">年化波动率</p>
                         <p class="metric-value" id="volatility_strategy">--</p>
-                        <p class="metric-benchmark">基准: <span id="volatility_benchmark">--</span></p>
+                        <p class="metric-benchmark" id="volatility_benchmark_label">基准: <span
+                                id="volatility_benchmark">--</span></p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">策略最大回撤</p>
+                        <p class="metric-title" data-lang-key="strategyMaxDrawdown">策略最大回撤</p>
                         <p class="metric-value drawdown" id="max_drawdown_strategy">--</p>
-                        <p class="metric-benchmark">衡量策略历史最大跌幅</p>
+                        <p class="metric-benchmark" data-lang-key="maxDrawdownDesc">衡量策略历史最大跌幅</p>
                     </div>
                 </div>
 
                 <!-- 第二列: 风险调整后收益 -->
                 <div class="indicator-column">
-                    <h3>风险调整后收益</h3>
-                    <p class="column-subtitle">注：无风险利率采用对应期SHIBOR均值</p>
+                    <h3 data-lang-key="riskAdjustedTitle">风险调整后收益</h3>
+                    <p class="column-subtitle" data-lang-key="riskAdjustedSubtitle">注：无风险利率采用对应期SHIBOR均值</p>
                     <div class="indicator-card">
-                        <p class="metric-title">夏普比率 (Sharpe Ratio)</p>
+                        <p class="metric-title" data-lang-key="sharpeRatio">夏普比率 (Sharpe Ratio)</p>
                         <p class="metric-value" id="sharpe_ratio_strategy">--</p>
-                        <p class="metric-benchmark">基准: <span id="sharpe_ratio_benchmark">--</span></p>
+                        <p class="metric-benchmark" id="sharpe_ratio_benchmark_label">基准: <span
+                                id="sharpe_ratio_benchmark">--</span></p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">索提诺比率 (Sortino Ratio)</p>
+                        <p class="metric-title" data-lang-key="sortinoRatio">索提诺比率 (Sortino Ratio)</p>
                         <p class="metric-value" id="sortino_ratio_strategy">--</p>
-                        <p class="metric-benchmark">基准: <span id="sortino_ratio_benchmark">--</span></p>
+                        <p class="metric-benchmark" id="sortino_ratio_benchmark_label">基准: <span
+                                id="sortino_ratio_benchmark">--</span></p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">科尔马比率 (Calmar Ratio)</p>
+                        <p class="metric-title" data-lang-key="calmarRatio">科尔马比率 (Calmar Ratio)</p>
                         <p class="metric-value" id="calmar_ratio_strategy">--</p>
-                        <p class="metric-benchmark">年化收益 / 最大回撤</p>
+                        <p class="metric-benchmark" data-lang-key="calmarRatioDesc">年化收益 / 最大回撤</p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">信息比率 (Information Ratio)</p>
+                        <p class="metric-title" data-lang-key="informationRatio">信息比率 (Information Ratio)</p>
                         <p class="metric-value" id="information_ratio">--</p>
-                        <p class="metric-benchmark">主动管理能力的衡量</p>
+                        <p class="metric-benchmark" data-lang-key="informationRatioDesc">主动管理能力的衡量</p>
                     </div>
                 </div>
 
                 <!-- 第三列: 相对基准分析 -->
                 <div class="indicator-column">
-                    <h3>相对基准分析</h3>
-                    <p class="column-subtitle">策略相对基准的超额表现</p>
+                    <h3 data-lang-key="relativeAnalysisTitle">相对基准分析</h3>
+                    <p class="column-subtitle" data-lang-key="relativeAnalysisSubtitle">策略相对基准的超额表现</p>
                     <div class="indicator-card">
-                        <p class="metric-title">年化Alpha</p>
+                        <p class="metric-title" data-lang-key="annualizedAlpha">年化Alpha</p>
                         <p class="metric-value" id="annualized_alpha">--</p>
-                        <p class="metric-benchmark">策略超越基准的年化回报</p>
+                        <p class="metric-benchmark" data-lang-key="annualizedAlphaDesc">策略超越基准的年化回报</p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">Beta系数</p>
+                        <p class="metric-title" data-lang-key="beta">Beta系数</p>
                         <p class="metric-value" id="beta">--</p>
-                        <p class="metric-benchmark">对基准波动的敏感度</p>
+                        <p class="metric-benchmark" data-lang-key="betaDesc">对基准波动的敏感度</p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">跟踪误差</p>
+                        <p class="metric-title" data-lang-key="trackingError">跟踪误差</p>
                         <p class="metric-value" id="volatility_excess">--</p>
-                        <p class="metric-benchmark">超额收益的年化波动率</p>
+                        <p class="metric-benchmark" data-lang-key="trackingErrorDesc">超额收益的年化波动率</p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title">超额收益最大回撤</p>
+                        <p class="metric-title" data-lang-key="excessMaxDrawdown">超额收益最大回撤</p>
                         <p class="metric-value drawdown" id="max_drawdown_excess">--</p>
-                        <p class="metric-benchmark">超额收益曲线的最大跌幅</p>
+                        <p class="metric-benchmark" data-lang-key="excessMaxDrawdownDesc">超额收益曲线的最大跌幅</p>
                     </div>
                 </div>
             </div>
@@ -425,35 +465,161 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 这些变量将在你的后端模板引擎中被替换
+            // These variables will be replaced by your backend template engine
             const chartConfig = '{{ CHART_CONFIG_JSON }}';
             const allData = '{{ ALL_DATA_JSON }}';
 
-            // 检查数据是否存在
+            // --- LANGUAGE TRANSLATION SETUP ---
+            let currentLang = 'zh';
+            const translations = {
+                zh: {
+                    mainTitle: '策略业绩报告',
+                    daily: '当日',
+                    weekly: '近一周',
+                    monthly: '近一月',
+                    threeMonth: '近三月',
+                    ytd: '今年以来',
+                    sinceInception: '成立以来',
+                    strategyReturn: '策略收益',
+                    benchmarkReturn: '基准收益',
+                    excessReturn: '超额收益',
+                    indicatorsTitle: '投资组合指标分析',
+                    btn1m: '近一月',
+                    btn3m: '近三月',
+                    btn6m: '近六月',
+                    btnYtd: '今年以来',
+                    btn1y: '近一年',
+                    btnAll: '成立以来',
+                    corePerformanceTitle: '核心表现',
+                    corePerformanceSubtitle: '策略与基准的绝对收益及风险',
+                    totalReturn: '总收益率',
+                    annualizedReturn: '年化收益率',
+                    annualizedVolatility: '年化波动率',
+                    strategyMaxDrawdown: '策略最大回撤',
+                    maxDrawdownDesc: '衡量策略历史最大跌幅',
+                    riskAdjustedTitle: '风险调整后收益',
+                    riskAdjustedSubtitle: '注：无风险利率采用对应期SHIBOR均值',
+                    sharpeRatio: '夏普比率 (Sharpe Ratio)',
+                    sortinoRatio: '索提诺比率 (Sortino Ratio)',
+                    calmarRatio: '科尔马比率 (Calmar Ratio)',
+                    calmarRatioDesc: '年化收益 / 最大回撤',
+                    informationRatio: '信息比率 (Information Ratio)',
+                    informationRatioDesc: '主动管理能力的衡量',
+                    relativeAnalysisTitle: '相对基准分析',
+                    relativeAnalysisSubtitle: '策略相对基准的超额表现',
+                    annualizedAlpha: '年化Alpha',
+                    annualizedAlphaDesc: '策略超越基准的年化回报',
+                    beta: 'Beta系数',
+                    betaDesc: '对基准波动的敏感度',
+                    trackingError: '跟踪误差',
+                    trackingErrorDesc: '超额收益的年化波动率',
+                    excessMaxDrawdown: '超额收益最大回撤',
+                    excessMaxDrawdownDesc: '超额收益曲线的最大跌幅',
+                    benchmarkPrefix: '基准: ',
+                    dateRangeSeparator: ' ~ ',
+                    tradingDaysSuffix: '个交易日',
+                },
+                en: {
+                    mainTitle: 'Strategy Performance Report',
+                    daily: 'Daily',
+                    weekly: 'Weekly',
+                    monthly: '1-Month',
+                    threeMonth: '3-Month',
+                    ytd: 'YTD',
+                    sinceInception: 'Since Inception',
+                    strategyReturn: 'Strategy Return',
+                    benchmarkReturn: 'Benchmark Return',
+                    excessReturn: 'Excess Return',
+                    indicatorsTitle: 'Portfolio Indicator Analysis',
+                    btn1m: '1M',
+                    btn3m: '3M',
+                    btn6m: '6M',
+                    btnYtd: 'YTD',
+                    btn1y: '1Y',
+                    btnAll: 'All',
+                    corePerformanceTitle: 'Core Performance',
+                    corePerformanceSubtitle: 'Absolute return and risk of the strategy and benchmark',
+                    totalReturn: 'Total Return',
+                    annualizedReturn: 'Annualized Return',
+                    annualizedVolatility: 'Annualized Volatility',
+                    strategyMaxDrawdown: 'Strategy Max Drawdown',
+                    maxDrawdownDesc: 'Measures the largest peak-to-trough decline',
+                    riskAdjustedTitle: 'Risk-Adjusted Return',
+                    riskAdjustedSubtitle: 'Note: Risk-free rate is the avg SHIBOR for the period',
+                    sharpeRatio: 'Sharpe Ratio',
+                    sortinoRatio: 'Sortino Ratio',
+                    calmarRatio: 'Calmar Ratio',
+                    calmarRatioDesc: 'Annualized Return / Max Drawdown',
+                    informationRatio: 'Information Ratio',
+                    informationRatioDesc: 'A measure of active management skill',
+                    relativeAnalysisTitle: 'Relative Analysis',
+                    relativeAnalysisSubtitle: 'Strategy\'s excess performance relative to the benchmark',
+                    annualizedAlpha: 'Annualized Alpha',
+                    annualizedAlphaDesc: 'Strategy\'s annualized return beyond the benchmark',
+                    beta: 'Beta',
+                    betaDesc: 'Sensitivity to benchmark volatility',
+                    trackingError: 'Tracking Error',
+                    trackingErrorDesc: 'Annualized volatility of excess returns',
+                    excessMaxDrawdown: 'Excess Return Max Drawdown',
+                    excessMaxDrawdownDesc: 'The largest peak-to-trough decline of the excess return curve',
+                    benchmarkPrefix: 'Benchmark: ',
+                    dateRangeSeparator: ' to ',
+                    tradingDaysSuffix: ' trading days',
+                }
+            };
+
+            const switchLanguage = (lang) => {
+                if (currentLang === lang) return;
+                currentLang = lang;
+
+                document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+                // Update button active state
+                document.getElementById('lang-zh').classList.toggle('active', lang === 'zh');
+                document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+
+                // Translate all static elements with data-lang-key
+                document.querySelectorAll('[data-lang-key]').forEach(el => {
+                    const key = el.dataset.langKey;
+                    if (translations[lang] && translations[lang][key]) {
+                        el.innerText = translations[lang][key];
+                    }
+                });
+
+                // Re-render all dynamic content
+                populateSummaryCards();
+                updateIndicators(document.querySelector('.period-btn.active').dataset.period);
+
+                // Also update the chart title if necessary
+                const currentChartOption = myChart.getOption();
+                currentChartOption.title[0].text = translations[currentLang].mainTitle;
+                myChart.setOption(currentChartOption);
+            };
+
+            document.getElementById('lang-zh').addEventListener('click', () => switchLanguage('zh'));
+            document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
+            // --- END LANGUAGE SETUP ---
+
             if (!chartConfig || !allData) {
-                console.error("图表或指标数据未能正确加载，请检查后端模板变量。");
+                console.error("Chart or indicator data could not be loaded. Please check backend template variables.");
                 return;
             }
 
-            // 初始化 ECharts 图表
             const myChart = echarts.init(document.getElementById('chart-container'));
             myChart.setOption(chartConfig);
             window.addEventListener('resize', () => myChart.resize());
 
-            // 简化获取元素的函数
             const el = (id) => document.getElementById(id);
 
-            // 填充摘要
             const populateSummaryCards = () => {
                 const periods = ['daily', 'weekly', '1m', '3m', 'ytd', 'all'];
                 periods.forEach(period => {
                     const data = allData[period];
                     if (!data) return;
 
-                    const formatDateRange = (start, end) => (start === end) ? start : `${start} ~ ${end}`;
+                    const formatDateRange = (start, end) => (start === end) ? start : `${start}${translations[currentLang].dateRangeSeparator}${end}`;
                     el(`summary-date-${period}`).innerText = formatDateRange(data.start_date, data.end_date);
 
-                    // 统一处理渲染逻辑
                     ['strategy', 'benchmark', 'excess'].forEach(type => {
                         let key, value;
                         if (type === 'strategy') key = 'total_return_strategy';
@@ -468,46 +634,53 @@
                 });
             };
 
-            // 更新指标数据的核心函数
             const updateIndicators = (period) => {
                 const data = allData[period];
                 if (!data) {
-                    console.error(`未找到时间段 "${period}" 的数据`);
+                    console.error(`Data for period "${period}" not found`);
                     return;
                 }
+                const langDict = translations[currentLang];
 
-                // 格式化函数，方便复用
                 const formatPercent = (value) => `${value.toFixed(2)}%`;
                 const formatNumber = (value) => value.toFixed(2);
 
-                // --- 更新标题日期范围 ---
-                el('indicator-date-range').innerText = `(${data.start_date} 至 ${data.end_date}, ${data.days}个交易日)`;
+                const setBenchmarkText = (elementId, value) => {
+                    const labelElement = el(elementId + '_label');
+                    const valueElement = el(elementId);
+                    if (labelElement && valueElement) {
+                        // Reconstruct the innerHTML to keep the span
+                        labelElement.innerHTML = `${langDict.benchmarkPrefix}<span id="${elementId}">${formatNumber(value)}</span>`;
+                    }
+                }
 
-                // --- 更新第一列: 核心表现 ---
+                // --- Update date range header ---
+                el('indicator-date-range').innerText = `(${data.start_date}${langDict.dateRangeSeparator}${data.end_date}, ${data.days}${langDict.tradingDaysSuffix})`;
+
+                // --- Column 1: Core Performance ---
                 el('total_return_strategy').innerText = formatPercent(data.total_return_strategy);
-                el('total_return_benchmark').innerText = formatPercent(data.total_return_benchmark);
+                setBenchmarkText('total_return_benchmark', data.total_return_benchmark);
                 el('annualized_return_strategy').innerText = formatPercent(data.annualized_return_strategy);
-                el('annualized_return_benchmark').innerText = formatPercent(data.annualized_return_benchmark);
+                setBenchmarkText('annualized_return_benchmark', data.annualized_return_benchmark);
                 el('volatility_strategy').innerText = formatPercent(data.volatility_strategy);
-                el('volatility_benchmark').innerText = formatPercent(data.volatility_benchmark);
+                setBenchmarkText('volatility_benchmark', data.volatility_benchmark);
                 el('max_drawdown_strategy').innerText = formatPercent(data.max_drawdown_strategy);
 
-                // --- 更新第二列: 风险调整后收益 ---
+                // --- Column 2: Risk-Adjusted Return ---
                 el('sharpe_ratio_strategy').innerText = formatNumber(data.sharpe_ratio_strategy);
-                el('sharpe_ratio_benchmark').innerText = formatNumber(data.sharpe_ratio_benchmark);
+                setBenchmarkText('sharpe_ratio_benchmark', data.sharpe_ratio_benchmark);
                 el('sortino_ratio_strategy').innerText = formatNumber(data.sortino_ratio_strategy);
-                el('sortino_ratio_benchmark').innerText = formatNumber(data.sortino_ratio_benchmark);
+                setBenchmarkText('sortino_ratio_benchmark', data.sortino_ratio_benchmark);
                 el('calmar_ratio_strategy').innerText = formatNumber(data.calmar_ratio_strategy);
                 el('information_ratio').innerText = formatNumber(data.information_ratio);
 
-                // --- 更新第三列: 相对基准分析 ---
+                // --- Column 3: Relative Analysis ---
                 el('annualized_alpha').innerText = formatPercent(data.annualized_alpha);
                 el('beta').innerText = formatNumber(data.beta);
                 el('volatility_excess').innerText = formatPercent(data.volatility_excess);
                 el('max_drawdown_excess').innerText = formatPercent(data.max_drawdown_excess);
             };
 
-            // 按钮点击事件绑定
             const buttons = document.querySelectorAll('.period-btn');
             buttons.forEach(button => {
                 button.addEventListener('click', (event) => {
@@ -518,7 +691,7 @@
                 });
             });
 
-            // 页面加载后，默认显示"成立以来"的数据
+            // Initial load
             populateSummaryCards();
             updateIndicators('all');
         });
