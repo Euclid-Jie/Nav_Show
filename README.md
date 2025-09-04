@@ -26,11 +26,11 @@
 ## 依赖环境
 
 - Python 3.7 及以上
-- 主要依赖：pandas、numpy、pyecharts、akshare、openpyxl
+- 主要依赖：pandas、numpy、pyecharts、akshare
 
 安装依赖：
 ```bash
-pip install pandas numpy pyecharts akshare openpyxl
+pip install pandas numpy pyecharts akshare
 ```
 
 ## 许可证
