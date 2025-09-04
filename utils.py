@@ -28,6 +28,14 @@ def calculate_indicators(df_period, rate_interbank_df):
     # Create a copy to avoid SettingWithCopyWarning
     df_period = df_period.copy()
 
+    # Calculate average business day intervals
+    if not df_period.empty and len(df_period) > 1:
+        dates = df_period.index.values.astype('datetime64[D]')
+        intervals = np.busday_count(dates[:-1], dates[1:])
+        avg_interval = intervals.mean() if intervals.size > 0 else 1
+    else:
+        avg_interval = 1
+
     # Handle cases with insufficient data
     if df_period.empty or len(df_period) < 2:
         return {
@@ -84,7 +92,7 @@ def calculate_indicators(df_period, rate_interbank_df):
         (1 + total_return_strategy) ** (1 / years) - 1 if years > 0 else 0
     )
     volatility_strategy = (
-        strategy_returns.std() * (252**0.5) if not strategy_returns.empty else 0
+        strategy_returns.std() * ((252/avg_interval)**0.5) if not strategy_returns.empty else 0
     )
     sharpe_ratio_strategy = (
         (annualized_return_strategy - risk_free_rate) / volatility_strategy
@@ -95,7 +103,7 @@ def calculate_indicators(df_period, rate_interbank_df):
     # Sortino Ratio for Strategy (considers only downside volatility)
     negative_returns_strategy = strategy_returns[strategy_returns < 0]
     downside_deviation_strategy = (
-        negative_returns_strategy.std() * (252**0.5)
+        negative_returns_strategy.std() * ((252/avg_interval)**0.5)
         if not negative_returns_strategy.empty
         else 0
     )
@@ -115,7 +123,7 @@ def calculate_indicators(df_period, rate_interbank_df):
         (1 + total_return_benchmark) ** (1 / years) - 1 if years > 0 else 0
     )
     volatility_benchmark = (
-        benchmark_returns.std() * (252**0.5) if not benchmark_returns.empty else 0
+        benchmark_returns.std() * ((252/avg_interval)**0.5) if not benchmark_returns.empty else 0
     )
     sharpe_ratio_benchmark = (
         (annualized_return_benchmark - risk_free_rate) / volatility_benchmark
@@ -126,7 +134,7 @@ def calculate_indicators(df_period, rate_interbank_df):
     # Sortino Ratio for Benchmark
     negative_returns_benchmark = benchmark_returns[benchmark_returns < 0]
     downside_deviation_benchmark = (
-        negative_returns_benchmark.std() * (252**0.5)
+        negative_returns_benchmark.std() * ((252/avg_interval)**0.5)
         if not negative_returns_benchmark.empty
         else 0
     )
@@ -160,7 +168,7 @@ def calculate_indicators(df_period, rate_interbank_df):
         total_geo_excess_return = cumulative_excess_return.iloc[-1] - 1
 
         # Volatility of excess returns (Tracking Error)
-        volatility_excess = excess_daily_returns.std() * (252**0.5)
+        volatility_excess = excess_daily_returns.std() * ((252/avg_interval)**0.5)
 
         # Information Ratio
         information_ratio = (
