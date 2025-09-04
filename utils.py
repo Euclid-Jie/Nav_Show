@@ -28,10 +28,11 @@ def calculate_indicators(df_period, rate_interbank_df):
     # Create a copy to avoid SettingWithCopyWarning
     df_period = df_period.copy()
 
+    custom_holidays = np.loadtxt("Chinese_special_holiday.txt", dtype="datetime64[D]")
     # Calculate average business day intervals
     if not df_period.empty and len(df_period) > 1:
         dates = df_period.index.values.astype('datetime64[D]')
-        intervals = np.busday_count(dates[:-1], dates[1:])
+        intervals = np.busday_count(dates[:-1], dates[1:], holidays=custom_holidays)
         avg_interval = intervals.mean() if intervals.size > 0 else 1
     else:
         avg_interval = 1
@@ -72,7 +73,6 @@ def calculate_indicators(df_period, rate_interbank_df):
     end_date_obj = df_period.index[-1]
     start_date = df_period.index[0].strftime("%Y-%m-%d")
     end_date = df_period.index[-1].strftime("%Y-%m-%d")
-    custom_holidays = np.loadtxt("Chinese_special_holiday.txt", dtype="datetime64[D]")
     days = int(np.busday_count(start_date_obj.date(), end_date_obj.date(), holidays=custom_holidays) + 1)
     years = days / 252 if days > 0 else 0
 
