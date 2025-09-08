@@ -2,7 +2,26 @@
 
 # Nav_Show 业绩报告说明
 
+快速使用：
+
+将`performance_data.csv`放置在项目根目录下，然后运行`performance_report.py`生成业绩报告。
+
+要求的performance_data.csv格式如下：
+
+```csv
+Date,Strategy_Value,Benchmark_Value
+2023-01-01,1.0,1.0
+2023-01-02,1.01,1.002
+2023-01-03,1.02,1.004
+```
+
+没有benchmark列时，基准恒定为1。
+
 ## 报告内容一览
+
+![](images/readme_1.png)
+
+![](images/readme_2.png)
 
 本项目自动生成的业绩报告（index.html）主要包含以下内容：
 
