@@ -69,6 +69,7 @@ def generate_performance_page_from_template(
             "start_date": today.strftime("%Y-%m-%d"),
             "end_date": today.strftime("%Y-%m-%d"),
         }
+
     except KeyError:  # 如果当天不是交易日
         all_data["daily"] = {
             "total_return_strategy": 0,

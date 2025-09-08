@@ -31,7 +31,7 @@ def calculate_indicators(df_period, rate_interbank_df):
     custom_holidays = np.loadtxt("Chinese_special_holiday.txt", dtype="datetime64[D]")
     # Calculate average business day intervals
     if not df_period.empty and len(df_period) > 1:
-        dates = df_period.index.values.astype('datetime64[D]')
+        dates = df_period.index.values.astype("datetime64[D]")
         intervals = np.busday_count(dates[:-1], dates[1:], holidays=custom_holidays)
         avg_interval = intervals.mean() if intervals.size > 0 else 1
     else:
@@ -49,7 +49,6 @@ def calculate_indicators(df_period, rate_interbank_df):
                 "sortino_ratio_strategy",
                 "calmar_ratio_strategy",
                 "max_drawdown_strategy",
-                "max_drawdown_excess",
                 "total_return_benchmark",
                 "annualized_return_benchmark",
                 "volatility_benchmark",
@@ -62,9 +61,13 @@ def calculate_indicators(df_period, rate_interbank_df):
                 "annualized_alpha",
                 "beta",
                 "information_ratio",
+                "max_drawdown_excess",
                 "start_date",
                 "end_date",
                 "days",
+                "avg_drawdown_magnitude_strategy",
+                "avg_drawdown_recovery_days_strategy",
+                "max_drawdown_recovery_days_strategy",
             ]
         }
 
@@ -73,7 +76,12 @@ def calculate_indicators(df_period, rate_interbank_df):
     end_date_obj = df_period.index[-1]
     start_date = df_period.index[0].strftime("%Y-%m-%d")
     end_date = df_period.index[-1].strftime("%Y-%m-%d")
-    days = int(np.busday_count(start_date_obj.date(), end_date_obj.date(), holidays=custom_holidays) + 1)
+    days = int(
+        np.busday_count(
+            start_date_obj.date(), end_date_obj.date(), holidays=custom_holidays
+        )
+        + 1
+    )
     years = days / 252 if days > 0 else 0
 
     # Risk-free rate (assumed to be annualized)
@@ -93,7 +101,9 @@ def calculate_indicators(df_period, rate_interbank_df):
         (1 + total_return_strategy) ** (1 / years) - 1 if years > 0 else 0
     )
     volatility_strategy = (
-        strategy_returns.std() * ((252/avg_interval)**0.5) if not strategy_returns.empty else 0
+        strategy_returns.std() * ((252 / avg_interval) ** 0.5)
+        if not strategy_returns.empty
+        else 0
     )
     sharpe_ratio_strategy = (
         (annualized_return_strategy - risk_free_rate) / volatility_strategy
@@ -101,10 +111,10 @@ def calculate_indicators(df_period, rate_interbank_df):
         else 0
     )
 
-    # Sortino Ratio for Strategy (considers only downside volatility)
+    # Sortino Ratio for Strategy
     negative_returns_strategy = strategy_returns[strategy_returns < 0]
     downside_deviation_strategy = (
-        negative_returns_strategy.std() * ((252/avg_interval)**0.5)
+        negative_returns_strategy.std() * ((252 / avg_interval) ** 0.5)
         if not negative_returns_strategy.empty
         else 0
     )
@@ -124,18 +134,18 @@ def calculate_indicators(df_period, rate_interbank_df):
         (1 + total_return_benchmark) ** (1 / years) - 1 if years > 0 else 0
     )
     volatility_benchmark = (
-        benchmark_returns.std() * ((252/avg_interval)**0.5) if not benchmark_returns.empty else 0
+        benchmark_returns.std() * ((252 / avg_interval) ** 0.5)
+        if not benchmark_returns.empty
+        else 0
     )
     sharpe_ratio_benchmark = (
         (annualized_return_benchmark - risk_free_rate) / volatility_benchmark
         if volatility_benchmark != 0
         else 0
     )
-
-    # Sortino Ratio for Benchmark
     negative_returns_benchmark = benchmark_returns[benchmark_returns < 0]
     downside_deviation_benchmark = (
-        negative_returns_benchmark.std() * ((252/avg_interval)**0.5)
+        negative_returns_benchmark.std() * ((252 / avg_interval) ** 0.5)
         if not negative_returns_benchmark.empty
         else 0
     )
@@ -148,35 +158,23 @@ def calculate_indicators(df_period, rate_interbank_df):
     # --- Alpha / Excess Return Calculations ---
     total_ari_excess_return = total_return_strategy - total_return_benchmark
     annualized_alpha = annualized_return_strategy - annualized_return_benchmark
-
-    # Align returns to handle potential missing dates
     aligned_returns = pd.DataFrame(
         {"strategy": strategy_returns, "benchmark": benchmark_returns}
     ).dropna()
     excess_daily_returns = aligned_returns["strategy"] - aligned_returns["benchmark"]
-
-    # Beta calculation (market sensitivity)
     if not aligned_returns.empty and len(aligned_returns) > 1:
         covariance = aligned_returns["strategy"].cov(aligned_returns["benchmark"])
         variance = aligned_returns["benchmark"].var()
         beta = covariance / variance if variance != 0 else 0
     else:
         beta = 0
-
     if not excess_daily_returns.empty:
-        # Geometric excess return
         cumulative_excess_return = (1 + excess_daily_returns).cumprod()
         total_geo_excess_return = cumulative_excess_return.iloc[-1] - 1
-
-        # Volatility of excess returns (Tracking Error)
-        volatility_excess = excess_daily_returns.std() * ((252/avg_interval)**0.5)
-
-        # Information Ratio
+        volatility_excess = excess_daily_returns.std() * ((252 / avg_interval) ** 0.5)
         information_ratio = (
             annualized_alpha / volatility_excess if volatility_excess != 0 else 0
         )
-
-        # Excess Sharpe Ratio
         annualized_return_excess = (
             (1 + total_geo_excess_return) ** (1 / years) - 1 if years > 0 else 0
         )
@@ -192,21 +190,16 @@ def calculate_indicators(df_period, rate_interbank_df):
         sharpe_ratio_excess = 0
 
     # --- Max Drawdown Calculations ---
-    # Strategy Max Drawdown
     df_period["Running_max_Strategy"] = df_period["Strategy_Cumulative_Return"].cummax()
     df_period["Drawdown_Strategy"] = (
         df_period["Strategy_Cumulative_Return"] / df_period["Running_max_Strategy"]
     ) - 1
     max_drawdown_strategy = df_period["Drawdown_Strategy"].min()
-
-    # Calmar Ratio for Strategy (return vs. drawdown)
     calmar_ratio_strategy = (
         annualized_return_strategy / abs(max_drawdown_strategy)
         if max_drawdown_strategy != 0
         else 0
     )
-
-    # Excess Return Max Drawdown
     if not excess_daily_returns.empty:
         cumulative_excess_series = (1 + excess_daily_returns).cumprod()
         running_max_excess = cumulative_excess_series.cummax()
@@ -214,6 +207,52 @@ def calculate_indicators(df_period, rate_interbank_df):
         max_drawdown_excess = drawdown_excess.min()
     else:
         max_drawdown_excess = 0
+
+    # --- Drawdown Recovery Time & Magnitude Calculations ---
+    recovery_times = []
+    drawdown_magnitudes = []
+
+    # Identify the index of all new peaks (high-water marks)
+    high_water_marks_indices = df_period.index[
+        df_period["Strategy_Cumulative_Return"].cummax().diff() > 0
+    ]
+    # Add the first day to the list of peaks
+    all_peaks_indices = df_period.index[:1].union(high_water_marks_indices)
+
+    # Loop through consecutive peaks to analyze each drawdown cycle
+    for i in range(len(all_peaks_indices) - 1):
+        peak_date = all_peaks_indices[i]
+        next_peak_date = all_peaks_indices[i + 1]
+
+        # Isolate the period between two peaks
+        period_between_peaks = df_period.loc[peak_date:next_peak_date]
+        peak_value = df_period.loc[peak_date, "Strategy_Cumulative_Return"]
+        trough_value = period_between_peaks["Strategy_Cumulative_Return"].min()
+
+        # A drawdown occurred if the minimum value is less than the starting peak value
+        if trough_value < peak_value:
+            # Calculate the magnitude of this specific drawdown
+            drawdown = (trough_value / peak_value) - 1
+            drawdown_magnitudes.append(abs(drawdown))
+
+            # Calculate recovery time in business days from peak to new peak
+            duration = np.busday_count(
+                peak_date.date(), next_peak_date.date(), holidays=custom_holidays
+            )
+            recovery_times.append(duration)
+
+    # Calculate the final metrics
+    if recovery_times:
+        avg_drawdown_recovery_days_strategy = np.mean(recovery_times)
+        max_drawdown_recovery_days_strategy = np.max(recovery_times)
+    else:
+        avg_drawdown_recovery_days_strategy = 0
+        max_drawdown_recovery_days_strategy = 0
+
+    if drawdown_magnitudes:
+        avg_drawdown_magnitude_strategy = np.mean(drawdown_magnitudes)
+    else:
+        avg_drawdown_magnitude_strategy = 0
 
     return {
         # Strategy Metrics
@@ -243,4 +282,8 @@ def calculate_indicators(df_period, rate_interbank_df):
         "start_date": start_date,
         "end_date": end_date,
         "days": days,
+        # Drawdown Analysis Metrics
+        "avg_drawdown_magnitude_strategy": avg_drawdown_magnitude_strategy * 100,
+        "avg_drawdown_recovery_days_strategy": avg_drawdown_recovery_days_strategy,
+        "max_drawdown_recovery_days_strategy": max_drawdown_recovery_days_strategy,
     }
