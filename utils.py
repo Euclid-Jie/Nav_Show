@@ -68,6 +68,9 @@ def calculate_indicators(df_period, rate_interbank_df):
                 "avg_drawdown_magnitude_strategy",
                 "avg_drawdown_recovery_days_strategy",
                 "max_drawdown_recovery_days_strategy",
+                "avg_drawdown_magnitude_benchmark",
+                "avg_drawdown_recovery_days_benchmark",
+                "max_drawdown_recovery_days_benchmark",
             ]
         }
 
@@ -189,70 +192,55 @@ def calculate_indicators(df_period, rate_interbank_df):
         information_ratio = 0
         sharpe_ratio_excess = 0
 
-    # --- Max Drawdown Calculations ---
+      # --- Max Drawdown Calculations ---
     df_period["Running_max_Strategy"] = df_period["Strategy_Cumulative_Return"].cummax()
-    df_period["Drawdown_Strategy"] = (
-        df_period["Strategy_Cumulative_Return"] / df_period["Running_max_Strategy"]
-    ) - 1
+    df_period["Drawdown_Strategy"] = (df_period["Strategy_Cumulative_Return"] / df_period["Running_max_Strategy"]) - 1
     max_drawdown_strategy = df_period["Drawdown_Strategy"].min()
-    calmar_ratio_strategy = (
-        annualized_return_strategy / abs(max_drawdown_strategy)
-        if max_drawdown_strategy != 0
-        else 0
-    )
+    calmar_ratio_strategy = (annualized_return_strategy / abs(max_drawdown_strategy) if max_drawdown_strategy != 0 else 0)
+
+    # NEW: Added Max Drawdown for Benchmark
+    df_period["Running_max_Benchmark"] = df_period["Benchmark_Cumulative_Return"].cummax()
+    df_period["Drawdown_Benchmark"] = (df_period["Benchmark_Cumulative_Return"] / df_period["Running_max_Benchmark"]) - 1
+    max_drawdown_benchmark = df_period["Drawdown_Benchmark"].min()
+
     if not excess_daily_returns.empty:
         cumulative_excess_series = (1 + excess_daily_returns).cumprod()
-        running_max_excess = cumulative_excess_series.cummax()
-        drawdown_excess = (cumulative_excess_series / running_max_excess) - 1
+        drawdown_excess = (cumulative_excess_series / cumulative_excess_series.cummax()) - 1
         max_drawdown_excess = drawdown_excess.min()
     else:
         max_drawdown_excess = 0
 
-    # --- Drawdown Recovery Time & Magnitude Calculations ---
-    recovery_times = []
-    drawdown_magnitudes = []
+    # --- Strategy Drawdown Recovery Time & Magnitude ---
+    s_recovery_times, s_drawdown_magnitudes = [], []
+    s_hwm_indices = df_period.index[df_period["Strategy_Cumulative_Return"].cummax().diff() > 0]
+    s_all_peaks = df_period.index[:1].union(s_hwm_indices)
+    for i in range(len(s_all_peaks) - 1):
+        peak_date, next_peak_date = s_all_peaks[i], s_all_peaks[i+1]
+        period = df_period.loc[peak_date:next_peak_date]
+        peak_val, trough_val = period.loc[peak_date, "Strategy_Cumulative_Return"], period["Strategy_Cumulative_Return"].min()
+        if trough_val < peak_val:
+            s_drawdown_magnitudes.append(abs((trough_val / peak_val) - 1))
+            duration = np.busday_count(peak_date.date(), next_peak_date.date(), holidays=custom_holidays)
+            s_recovery_times.append(duration)
+    avg_dd_recovery_days_s = np.mean(s_recovery_times) if s_recovery_times else 0
+    max_dd_recovery_days_s = np.max(s_recovery_times) if s_recovery_times else 0
+    avg_dd_magnitude_s = np.mean(s_drawdown_magnitudes) if s_drawdown_magnitudes else 0
 
-    # Identify the index of all new peaks (high-water marks)
-    high_water_marks_indices = df_period.index[
-        df_period["Strategy_Cumulative_Return"].cummax().diff() > 0
-    ]
-    # Add the first day to the list of peaks
-    all_peaks_indices = df_period.index[:1].union(high_water_marks_indices)
-
-    # Loop through consecutive peaks to analyze each drawdown cycle
-    for i in range(len(all_peaks_indices) - 1):
-        peak_date = all_peaks_indices[i]
-        next_peak_date = all_peaks_indices[i + 1]
-
-        # Isolate the period between two peaks
-        period_between_peaks = df_period.loc[peak_date:next_peak_date]
-        peak_value = df_period.loc[peak_date, "Strategy_Cumulative_Return"]
-        trough_value = period_between_peaks["Strategy_Cumulative_Return"].min()
-
-        # A drawdown occurred if the minimum value is less than the starting peak value
-        if trough_value < peak_value:
-            # Calculate the magnitude of this specific drawdown
-            drawdown = (trough_value / peak_value) - 1
-            drawdown_magnitudes.append(abs(drawdown))
-
-            # Calculate recovery time in business days from peak to new peak
-            duration = np.busday_count(
-                peak_date.date(), next_peak_date.date(), holidays=custom_holidays
-            )
-            recovery_times.append(duration)
-
-    # Calculate the final metrics
-    if recovery_times:
-        avg_drawdown_recovery_days_strategy = np.mean(recovery_times)
-        max_drawdown_recovery_days_strategy = np.max(recovery_times)
-    else:
-        avg_drawdown_recovery_days_strategy = 0
-        max_drawdown_recovery_days_strategy = 0
-
-    if drawdown_magnitudes:
-        avg_drawdown_magnitude_strategy = np.mean(drawdown_magnitudes)
-    else:
-        avg_drawdown_magnitude_strategy = 0
+    # NEW: --- Benchmark Drawdown Recovery Time & Magnitude ---
+    b_recovery_times, b_drawdown_magnitudes = [], []
+    b_hwm_indices = df_period.index[df_period["Benchmark_Cumulative_Return"].cummax().diff() > 0]
+    b_all_peaks = df_period.index[:1].union(b_hwm_indices)
+    for i in range(len(b_all_peaks) - 1):
+        peak_date, next_peak_date = b_all_peaks[i], b_all_peaks[i+1]
+        period = df_period.loc[peak_date:next_peak_date]
+        peak_val, trough_val = period.loc[peak_date, "Benchmark_Cumulative_Return"], period["Benchmark_Cumulative_Return"].min()
+        if trough_val < peak_val:
+            b_drawdown_magnitudes.append(abs((trough_val / peak_val) - 1))
+            duration = np.busday_count(peak_date.date(), next_peak_date.date(), holidays=custom_holidays)
+            b_recovery_times.append(duration)
+    avg_dd_recovery_days_b = np.mean(b_recovery_times) if b_recovery_times else 0
+    max_dd_recovery_days_b = np.max(b_recovery_times) if b_recovery_times else 0
+    avg_dd_magnitude_b = np.mean(b_drawdown_magnitudes) if b_drawdown_magnitudes else 0
 
     return {
         # Strategy Metrics
@@ -283,7 +271,10 @@ def calculate_indicators(df_period, rate_interbank_df):
         "end_date": end_date,
         "days": days,
         # Drawdown Analysis Metrics
-        "avg_drawdown_magnitude_strategy": avg_drawdown_magnitude_strategy * 100,
-        "avg_drawdown_recovery_days_strategy": avg_drawdown_recovery_days_strategy,
-        "max_drawdown_recovery_days_strategy": max_drawdown_recovery_days_strategy,
+        "avg_drawdown_magnitude_strategy": avg_dd_magnitude_s * 100,
+        "avg_drawdown_recovery_days_strategy": avg_dd_recovery_days_s,
+        "max_drawdown_recovery_days_strategy": max_dd_recovery_days_s,
+        "avg_drawdown_magnitude_benchmark": avg_dd_magnitude_b * 100,
+        "avg_drawdown_recovery_days_benchmark": avg_dd_recovery_days_b,
+        "max_drawdown_recovery_days_benchmark": max_dd_recovery_days_b,
     }
