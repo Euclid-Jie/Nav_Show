@@ -19,6 +19,16 @@ def generate_performance_page_from_template(
     df = pd.read_csv(data_path, parse_dates=["Date"])
     df.set_index("Date", inplace=True)
     df.sort_index(inplace=True)
+
+    if "Benchmark_Value" not in df.columns or df["Benchmark_Value"].isna().all():
+        # 创建值为1的基准（表示无变化）
+        df["Benchmark_Value"] = 1.0
+        df["Benchmark_Cumulative_Return"] = 1.0
+        print("警告：未找到有效的基准数据，使用默认基准值1")
+    else:
+        # 如果有基准数据，计算基准累计收益
+        df["Benchmark_Cumulative_Return"] = df["Benchmark_Value"]
+
     df["Strategy_Cumulative_Return"] = df["Strategy_Value"]
     df["Benchmark_Cumulative_Return"] = df["Benchmark_Value"]
     df["Excess_Return_Pct"] = (
@@ -204,4 +214,9 @@ def generate_performance_page_from_template(
 
 if __name__ == "__main__":
     rate_interbank_df = get_rate_interbank_df()
-    generate_performance_page_from_template(template_path="template.html",rate_interbank_df=rate_interbank_df)
+    generate_performance_page_from_template(
+        data_path="performance_data.csv",
+        template_path="template.html",
+        rate_interbank_df=rate_interbank_df,
+        output_html="index.html",
+    )
