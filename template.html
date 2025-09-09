@@ -428,6 +428,13 @@
                                 id="sharpe_ratio_benchmark">--</span></p>
                     </div>
                     <div class="indicator-card">
+                        <p class="metric-title" data-lang-key="winRate">胜率 (Win Rate)</p>
+                        <p class="metric-value" id="win_rate_strategy">--</p>
+                        <p class="metric-benchmark" id="win_rate_benchmark_label">
+                            基准: <span id="win_rate_benchmark">--</span>
+                        </p>
+                    </div>
+                    <div class="indicator-card">
                         <p class="metric-title" data-lang-key="sortinoRatio">索提诺比率 (Sortino Ratio)</p>
                         <p class="metric-value" id="sortino_ratio_strategy">--</p>
                         <p class="metric-benchmark" id="sortino_ratio_benchmark_label">基准: <span
@@ -510,6 +517,7 @@
                     corePerformanceSubtitle: '策略与基准的绝对收益及风险',
                     totalReturn: '总收益率',
                     annualizedReturn: '年化收益率',
+                    winRate: '胜率',
                     annualizedVolatility: '年化波动率',
                     strategyMaxDrawdown: '策略最大回撤',
                     maxDrawdownDesc: '衡量策略历史最大跌幅',
@@ -560,6 +568,7 @@
                     corePerformanceTitle: 'Core Performance',
                     corePerformanceSubtitle: 'Absolute return and risk of the strategy and benchmark',
                     totalReturn: 'Total Return',
+                    winRate:  'Win Rate',
                     annualizedReturn: 'Annualized Return',
                     annualizedVolatility: 'Annualized Volatility',
                     strategyMaxDrawdown: 'Strategy Max Drawdown',
@@ -698,6 +707,8 @@
                 // --- Column 2: Risk-Adjusted Return ---
                 el('sharpe_ratio_strategy').innerText = formatNumber(data.sharpe_ratio_strategy);
                 setBenchmarkText('sharpe_ratio_benchmark', data.sharpe_ratio_benchmark);
+                el('win_rate_strategy').innerText = formatPercent(data.win_rate_strategy);
+                setBenchmarkText('win_rate_benchmark', data.win_rate_benchmark, formatPercent);
                 el('sortino_ratio_strategy').innerText = formatNumber(data.sortino_ratio_strategy);
                 setBenchmarkText('sortino_ratio_benchmark', data.sortino_ratio_benchmark);
                 el('calmar_ratio_strategy').innerText = formatNumber(data.calmar_ratio_strategy);

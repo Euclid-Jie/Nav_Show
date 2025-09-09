@@ -60,6 +60,8 @@ def calculate_indicators(df_period, rate_interbank_df):
                 "sharpe_ratio_excess",
                 "annualized_alpha",
                 "beta",
+                "win_rate_s",
+                "win_rate_b",
                 "treynor_ratio",
                 "information_ratio",
                 "max_drawdown_excess",
@@ -97,6 +99,11 @@ def calculate_indicators(df_period, rate_interbank_df):
 
     # --- Strategy Calculations ---
     strategy_returns = df_period["Strategy_Cumulative_Return"].pct_change().dropna()
+    win_rate_s = (
+        (strategy_returns > 0).sum() / len(strategy_returns)
+        if not strategy_returns.empty
+        else 0
+    )
     total_return_strategy = (
         df_period["Strategy_Cumulative_Return"].iloc[-1]
         / df_period["Strategy_Cumulative_Return"].iloc[0]
@@ -130,6 +137,11 @@ def calculate_indicators(df_period, rate_interbank_df):
 
     # --- Benchmark Calculations ---
     benchmark_returns = df_period["Benchmark_Cumulative_Return"].pct_change().dropna()
+    win_rate_b = (
+        (benchmark_returns > 0).sum() / len(benchmark_returns)
+        if not benchmark_returns.empty
+        else 0
+    )
     total_return_benchmark = (
         df_period["Benchmark_Cumulative_Return"].iloc[-1]
         / df_period["Benchmark_Cumulative_Return"].iloc[0]
@@ -259,6 +271,7 @@ def calculate_indicators(df_period, rate_interbank_df):
     return {
         # Strategy Metrics
         "total_return_strategy": total_return_strategy * 100,
+        "win_rate_strategy": win_rate_s * 100,
         "annualized_return_strategy": annualized_return_strategy * 100,
         "volatility_strategy": volatility_strategy * 100,
         "sharpe_ratio_strategy": sharpe_ratio_strategy,
@@ -267,6 +280,7 @@ def calculate_indicators(df_period, rate_interbank_df):
         "max_drawdown_strategy": abs(max_drawdown_strategy * 100),
         # Benchmark Metrics
         "total_return_benchmark": total_return_benchmark * 100,
+        "win_rate_benchmark": win_rate_b * 100,
         "annualized_return_benchmark": annualized_return_benchmark * 100,
         "volatility_benchmark": volatility_benchmark * 100,
         "sharpe_ratio_benchmark": sharpe_ratio_benchmark,
