@@ -439,6 +439,11 @@
                         <p class="metric-benchmark" data-lang-key="calmarRatioDesc">年化收益 / 最大回撤</p>
                     </div>
                     <div class="indicator-card">
+                        <p class="metric-title" data-lang-key="treynorRatio">特雷诺比率 (Treynor Ratio)</p>
+                        <p class="metric-value" id="treynor_ratio">--</p>
+                        <p class="metric-benchmark" data-lang-key="treynorRatioDesc">年化收益 / Beta</p>
+                    </div>
+                    <div class="indicator-card">
                         <p class="metric-title" data-lang-key="informationRatio">信息比率 (Information Ratio)</p>
                         <p class="metric-value" id="information_ratio">--</p>
                         <p class="metric-benchmark" data-lang-key="informationRatioDesc">主动管理能力的衡量</p>
@@ -516,6 +521,8 @@
                     sortinoRatio: '索提诺比率 (Sortino Ratio)',
                     calmarRatio: '科尔马比率 (Calmar Ratio)',
                     calmarRatioDesc: '年化收益 / 最大回撤',
+                    treynorRatio: '特雷诺比率 (Treynor Ratio)',
+                    treynorRatioDesc: '年化收益 / Beta',
                     informationRatio: '信息比率 (Information Ratio)',
                     informationRatioDesc: '主动管理能力的衡量',
                     relativeAnalysisTitle: '相对基准分析',
@@ -565,6 +572,8 @@
                     sortinoRatio: 'Sortino Ratio',
                     calmarRatio: 'Calmar Ratio',
                     calmarRatioDesc: 'Annualized Return / Max Drawdown',
+                    treynorRatio: 'Treynor Ratio',
+                    treynorRatioDesc: 'Annualized Return / Beta',
                     informationRatio: 'Information Ratio',
                     informationRatioDesc: 'A measure of active management skill',
                     relativeAnalysisTitle: 'Relative Analysis',
@@ -692,6 +701,7 @@
                 el('sortino_ratio_strategy').innerText = formatNumber(data.sortino_ratio_strategy);
                 setBenchmarkText('sortino_ratio_benchmark', data.sortino_ratio_benchmark);
                 el('calmar_ratio_strategy').innerText = formatNumber(data.calmar_ratio_strategy);
+                el('treynor_ratio').innerText = formatNumber(data.treynor_ratio);
                 el('information_ratio').innerText = formatNumber(data.information_ratio);
 
                 // --- Column 3: Relative Analysis ---

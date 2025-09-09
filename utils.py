@@ -60,6 +60,7 @@ def calculate_indicators(df_period, rate_interbank_df):
                 "sharpe_ratio_excess",
                 "annualized_alpha",
                 "beta",
+                "treynor_ratio",
                 "information_ratio",
                 "max_drawdown_excess",
                 "start_date",
@@ -192,7 +193,14 @@ def calculate_indicators(df_period, rate_interbank_df):
         information_ratio = 0
         sharpe_ratio_excess = 0
 
-      # --- Max Drawdown Calculations ---
+    # Treynor Ratio
+    treynor_ratio = (
+        (annualized_return_strategy - risk_free_rate) / beta
+        if beta != 0
+        else 0
+    )
+
+    # --- Max Drawdown Calculations ---
     df_period["Running_max_Strategy"] = df_period["Strategy_Cumulative_Return"].cummax()
     df_period["Drawdown_Strategy"] = (df_period["Strategy_Cumulative_Return"] / df_period["Running_max_Strategy"]) - 1
     max_drawdown_strategy = df_period["Drawdown_Strategy"].min()
@@ -263,6 +271,7 @@ def calculate_indicators(df_period, rate_interbank_df):
         "volatility_benchmark": volatility_benchmark * 100,
         "sharpe_ratio_benchmark": sharpe_ratio_benchmark,
         "sortino_ratio_benchmark": sortino_ratio_benchmark,
+        "treynor_ratio": treynor_ratio,
         # Excess Return Metrics
         "total_ari_excess_return": total_ari_excess_return * 100,
         "total_geo_excess_return": total_geo_excess_return * 100,
