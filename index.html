@@ -405,12 +405,12 @@
                         <p class="metric-benchmark" data-lang-key="maxDrawdownDesc">衡量策略历史最大跌幅</p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title" data-lang-key="avgDrawdownRecoveryDays">策略平均回撤修复时间</p>
+                        <p class="metric-title" data-lang-key="avgDrawdownRecoveryDays">策略平均回撤修复时间（天）</p>
                         <p class="metric-value" id="avg_drawdown_recovery_days_strategy">--</p>
                         <p class="metric-benchmark" id="avg_drawdown_recovery_days_benchmark_label" data-lang-key="benchmarkPrefix">基准：<span id="avg_drawdown_recovery_days_benchmark">--</span></p>
                     </div>
                     <div class="indicator-card">
-                        <p class="metric-title" data-lang-key="maxDrawdownRecoveryDays">策略最大回撤修复时间</p>
+                        <p class="metric-title" data-lang-key="maxDrawdownRecoveryDays">策略最大回撤修复时间（天）</p>
                         <p class="metric-value" id="max_drawdown_recovery_days_strategy">--</p>
                         <p class="metric-benchmark" id="max_drawdown_recovery_days_benchmark_label" data-lang-key="benchmarkPrefix">基准：<span
                                 id="max_drawdown_recovery_days_benchmark">--</span></p>
@@ -27578,13 +27578,14 @@
 
                 const formatPercent = (value) => `${value.toFixed(2)}%`;
                 const formatNumber = (value) => value.toFixed(2);
+                const formatInteger = (value) => Math.round(value);
 
-                const setBenchmarkText = (elementId, value) => {
+                const setBenchmarkText = (elementId, value, formatter = formatNumber) => {
                     const labelElement = el(elementId + '_label');
                     const valueElement = el(elementId);
                     if (labelElement && valueElement) {
                         // Reconstruct the innerHTML to keep the span
-                        labelElement.innerHTML = `${langDict.benchmarkPrefix}<span id="${elementId}">${formatNumber(value)}</span>`;
+                        labelElement.innerHTML = `${langDict.benchmarkPrefix}<span id="${elementId}">${formatter(value)}</span>`;
                     }
                 }
 
@@ -27599,10 +27600,10 @@
                 el('volatility_strategy').innerText = formatPercent(data.volatility_strategy);
                 setBenchmarkText('volatility_benchmark', data.volatility_benchmark);
                 el('max_drawdown_strategy').innerText = formatPercent(data.max_drawdown_strategy);
-                el('avg_drawdown_recovery_days_strategy').innerText = formatNumber(data.avg_drawdown_recovery_days_strategy);
-                setBenchmarkText('avg_drawdown_recovery_days_benchmark', data.avg_drawdown_recovery_days_benchmark);
-                el('max_drawdown_recovery_days_strategy').innerText = formatNumber(data.max_drawdown_recovery_days_strategy);
-                setBenchmarkText('max_drawdown_recovery_days_benchmark', data.max_drawdown_recovery_days_benchmark);
+                el('avg_drawdown_recovery_days_strategy').innerText = formatInteger(data.avg_drawdown_recovery_days_strategy);
+                setBenchmarkText('avg_drawdown_recovery_days_benchmark', data.avg_drawdown_recovery_days_benchmark, formatInteger);
+                el('max_drawdown_recovery_days_strategy').innerText = formatInteger(data.max_drawdown_recovery_days_strategy);
+                setBenchmarkText('max_drawdown_recovery_days_benchmark', data.max_drawdown_recovery_days_benchmark, formatInteger);
 
                 // --- Column 2: Risk-Adjusted Return ---
                 el('sharpe_ratio_strategy').innerText = formatNumber(data.sharpe_ratio_strategy);
