@@ -225,6 +225,9 @@ def calculate_indicators(df_period, rate_interbank_df):
     avg_dd_recovery_days_s = np.mean(s_recovery_times) if s_recovery_times else 0
     max_dd_recovery_days_s = np.max(s_recovery_times) if s_recovery_times else 0
     avg_dd_magnitude_s = np.mean(s_drawdown_magnitudes) if s_drawdown_magnitudes else 0
+    avg_dd_recovery_days_s = int(avg_dd_recovery_days_s)
+    max_dd_recovery_days_s = int(max_dd_recovery_days_s)
+    avg_dd_magnitude_s = int(avg_dd_magnitude_s)
 
     # NEW: --- Benchmark Drawdown Recovery Time & Magnitude ---
     b_recovery_times, b_drawdown_magnitudes = [], []
@@ -241,6 +244,9 @@ def calculate_indicators(df_period, rate_interbank_df):
     avg_dd_recovery_days_b = np.mean(b_recovery_times) if b_recovery_times else 0
     max_dd_recovery_days_b = np.max(b_recovery_times) if b_recovery_times else 0
     avg_dd_magnitude_b = np.mean(b_drawdown_magnitudes) if b_drawdown_magnitudes else 0
+    avg_dd_recovery_days_b = int(avg_dd_recovery_days_b)
+    max_dd_recovery_days_b = int(max_dd_recovery_days_b)
+    avg_dd_magnitude_b = int(avg_dd_magnitude_b)
 
     return {
         # Strategy Metrics
