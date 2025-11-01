@@ -99,7 +99,7 @@ def generate_performance_page_from_template(
         Line(init_opts=opts.InitOpts(height="500px", theme="light"))
         .add_xaxis(xaxis_data=date_list)
         .add_yaxis(
-            "策略收益",
+            "策略收益(NetValue1)",
             strategy_data,
             is_smooth=True,
             is_symbol_show=False,
@@ -107,7 +107,7 @@ def generate_performance_page_from_template(
             label_opts=opts.LabelOpts(is_show=False),
         )
         .add_yaxis(
-            "基准收益 (中证500)",
+            "基准收益(NetValue2)",
             benchmark_data,
             is_smooth=True,
             is_symbol_show=False,
@@ -216,7 +216,7 @@ def generate_performance_page_from_template(
 if __name__ == "__main__":
     rate_interbank_df = get_rate_interbank_df()
     generate_performance_page_from_template(
-        data_path="performance_data.csv",
+        data_path="Normalized_NetValue.csv",
         template_path="template.html",
         rate_interbank_df=rate_interbank_df,
         output_html="index.html",
