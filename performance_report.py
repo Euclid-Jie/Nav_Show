@@ -94,8 +94,6 @@ class PerformanceReportGenerator:
         periods = {
             "weekly": pd.DateOffset(weeks=1),
             "1m": pd.DateOffset(months=1),
-            "3m": pd.DateOffset(months=3),
-            "6m": pd.DateOffset(months=6),
             "1y": pd.DateOffset(years=1),
         }
 
