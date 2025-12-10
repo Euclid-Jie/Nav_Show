@@ -1,135 +1,126 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    margin: 20px;
-    background-color: #f0f2f5;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f6f9;
     color: #333;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: auto;
     background-color: #ffffff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    position: relative;
-}
-
-.lang-switcher {
-    position: absolute;
-    top: 25px;
-    right: 30px;
-    display: flex;
-    gap: 5px;
-    background-color: #e9ecef;
-    border-radius: 8px;
-    padding: 4px;
-    z-index: 10;
-}
-
-.lang-btn {
-    background-color: transparent;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.85em;
-    font-weight: 500;
-    color: #495057;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.lang-btn.active {
-    background-color: #ffffff;
-    color: #007bff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-h1, h2 {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 20px;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
 h1 {
+    color: #2c3e50;
+    text-align: center;
     margin-bottom: 40px;
+    font-weight: 700;
+    font-size: 28px;
 }
 
 h2 {
-    margin-top: 40px;
-    text-align: left;
+    color: #34495e;
+    font-size: 20px;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
 }
 
+h3 {
+    font-size: 16px;
+    color: #555;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+/* 颜色定义 */
+.strategy-color { color: #d9534f; font-weight: bold; }
+.benchmark-color { color: #5cb85c; font-weight: bold; }
+.excess-color { color: #007bff; font-weight: bold; }
+.drawdown-color { color: #28a745; font-weight: bold; } /* 回撤通常用绿色表示安全/跌幅 */
+
+/* 顶部概览卡片 */
 .summary-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 20px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 .card {
     background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
     padding: 20px;
-    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
 .card .period-title {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #007bff;
-    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px 0;
 }
 
 .card .date-range {
-    font-size: 0.8em;
-    color: #666;
-    margin-bottom: 15px;
+    font-size: 12px;
+    color: #999;
+    margin: 0 0 15px 0;
 }
 
-.metric {
-    margin-bottom: 10px;
+.metric-row {
+    display: flex;
+    justify-content: space-between;
 }
 
-.metric p {
+.metric-item {
+    text-align: center;
+    flex: 1;
+}
+
+.metric-item .label {
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 4px 0;
+}
+
+.metric-item .value {
+    font-size: 16px;
     margin: 0;
-    font-size: 0.9em;
-    color: #555;
 }
 
-.metric .value {
-    font-size: 1.1em;
-    font-weight: 700;
-    margin-top: 5px;
-    color: #333;
-}
-
-.metric .icon.positive {
-    color: #d9534f;
-}
-
-.metric .icon.negative {
-    color: #5cb85c;
-}
-
+/* 图表区域 */
 .chart-section {
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
     padding: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    background: #fff;
 }
 
 #chart-container {
     width: 100%;
-    height: 700px;
+    height: 600px;
 }
 
+/* 详细指标区域 */
 .indicators-section {
-    margin-top: 40px;
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
+    background-color: #fff;
+    border-radius: 10px;
+    /* padding: 20px; */ /* 容器已有padding */
 }
 
 .indicators-header {
@@ -138,24 +129,18 @@ h2 {
     align-items: center;
     margin-bottom: 25px;
     flex-wrap: wrap;
-}
-
-.indicators-section h2 {
-    margin-top: 0;
-    margin-bottom: 0;
+    gap: 15px;
 }
 
 .date-range-header {
-    font-size: 0.7em;
+    font-size: 14px;
     font-weight: normal;
-    color: #666;
-    margin-top: 5px;
+    color: #888;
 }
 
 .period-buttons {
     display: flex;
-    gap: 5px;
-    background-color: #e9ecef;
+    background-color: #f1f3f5;
     border-radius: 8px;
     padding: 4px;
 }
@@ -163,81 +148,94 @@ h2 {
 .period-btn {
     background-color: transparent;
     border: none;
-    padding: 8px 16px;
+    padding: 6px 16px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9em;
-    color: #495057;
+    font-size: 14px;
+    color: #666;
     font-weight: 500;
-    transition: background-color 0.2s, color 0.2s;
+    transition: all 0.2s;
 }
 
 .period-btn:hover {
-    background-color: #dde2e7;
+    color: #333;
 }
 
 .period-btn.active {
-    background-color: #ffffff;
+    background-color: #fff;
     color: #007bff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .indicators-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 30px;
 }
 
-/* For no-benchmark template, we might want 2 columns or just center the first one */
-.indicators-grid.no-benchmark {
-    grid-template-columns: repeat(2, 1fr);
+.indicator-column {
+    background: #fcfcfc;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
 }
 
-.indicator-column h3 {
-    text-align: left;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.2em;
+.indicator-column.strategy-column { border-top: 4px solid #d9534f; }
+.indicator-column.benchmark-column { border-top: 4px solid #5cb85c; }
+.indicator-column.excess-column { border-top: 4px solid #007bff; }
+
+.indicator-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.indicator-card:last-child {
+    border-bottom: none;
+}
+
+.metric-title {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.metric-value {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
     color: #333;
 }
 
-.indicator-column .column-subtitle {
-    font-size: 12px;
-    color: #888;
-    margin-top: -15px;
-    margin-bottom: 15px;
-    height: 15px;
+/* 响应式调整 */
+@media (max-width: 900px) {
+    .indicators-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
-.indicator-card {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 20px;
-    flex: 1;
-    text-align: left;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
-    margin-bottom: 15px;
-}
-
-p.metric-title {
-    margin: 0 0 10px 0;
-    color: #555;
-    font-size: 0.9em;
-}
-
-p.metric-value {
-    margin: 0 0 8px 0;
-    font-size: 1.8em;
-    font-weight: 600;
-    color: #ee0505;
-}
-
-p.metric-value.drawdown {
-    color: #079c0f;
-}
-
-p.metric-benchmark {
-    margin: 0;
-    color: #777;
-    font-size: 0.85em;
+@media (max-width: 600px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .indicators-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .period-buttons {
+        width: 100%;
+        overflow-x: auto;
+    }
+    
+    .period-btn {
+        white-space: nowrap;
+    }
 }

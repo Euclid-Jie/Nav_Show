@@ -1,0 +1,3 @@
+[submodule "nav_interval_metric"]
+	path = nav_interval_metric
+	url = git@github.com:Euclid-Jie/nav_interval_metric.git
