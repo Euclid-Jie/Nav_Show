@@ -7,8 +7,8 @@ import os
 from pathlib import Path
 from pyecharts import options as opts
 from pyecharts.charts import Line, Grid
-from utils import calculate_indicators, generate_trading_date
-from config import SQL_HOST, SQL_PASSWORDS
+from .utils import calculate_indicators, generate_trading_date
+from .config import SQL_HOST, SQL_PASSWORDS
 import sqlalchemy
 from pyecharts.commons.utils import JsCode
 
@@ -23,8 +23,8 @@ class PerformanceReportGenerator:
         self,
         name: str,
         date: NDArray[np.datetime64],
-        nav: NDArray[float],
-        benchmark: Optional[NDArray[float]] = None,
+        nav: NDArray[np.floating],
+        benchmark: Optional[NDArray[np.floating]] = None,
     ):
         self.name = name
         self.df, self.has_benchmark = self._prepare_data(date, nav, benchmark)
@@ -32,8 +32,8 @@ class PerformanceReportGenerator:
     def _prepare_data(
         self,
         date: NDArray[np.datetime64],
-        nav: NDArray[float],
-        benchmark: Optional[NDArray[float]] = None,
+        nav: NDArray[np.floating],
+        benchmark: Optional[NDArray[np.floating]] = None,
     ) -> Tuple[pd.DataFrame, bool]:
         """准备数据：对齐日期，计算累计收益和回撤"""
         assert len(date) == len(nav), "日期与净值数据长度不匹配"
@@ -269,6 +269,16 @@ class PerformanceReportGenerator:
         with open(template_path, "r", encoding="utf-8") as f:
             html_content = f.read()
 
+        # 统一替换模板中的静态资源路径为 ./assets/...
+        # 适配可能存在的不同写法（绝对/相对），尽可能规范到同一路径
+        html_content = (
+            html_content
+            .replace("Nav_Show/assets/css/style.css", "./assets/css/style.css")
+            .replace("assets/css/style.css", "./assets/css/style.css")
+            .replace("Nav_Show/assets/js/main.js", "./assets/js/main.js")
+            .replace("assets/js/main.js", "./assets/js/main.js")
+        )
+
         js_data = f"""
         window.reportData = {{
             chartConfig: {json.dumps(self.generate_chart_config())},
@@ -299,6 +309,31 @@ class PerformanceReportGenerator:
         else:
             html_content = html_content.replace("</head>", f"{css_injection}</head>")
 
+        # 将 Nav_Show/assets 复制到输出目录的 assets 下，保证本地预览和 GitHub Pages 可用
+        try:
+            import shutil
+            output_path = Path(output_html)
+            output_dir = output_path.parent if output_path.parent != Path("") else Path(".")
+            src_assets = base_dir / "assets"
+            dest_assets = output_dir / "assets"
+            if src_assets.exists():
+                # Python 3.8+ 支持 dirs_exist_ok，若不存在则手动处理
+                try:
+                    shutil.copytree(src_assets, dest_assets, dirs_exist_ok=True)
+                except TypeError:
+                    # 兼容旧版：若已存在则逐文件拷贝
+                    if not dest_assets.exists():
+                        shutil.copytree(src_assets, dest_assets)
+                    else:
+                        for root, dirs, files in os.walk(src_assets):
+                            rel = Path(root).relative_to(src_assets)
+                            target_root = dest_assets / rel
+                            target_root.mkdir(parents=True, exist_ok=True)
+                            for fn in files:
+                                shutil.copy2(Path(root) / fn, target_root / fn)
+        except Exception as e:
+            print(f"复制静态资源失败: {e}")
+
         with open(output_html, "w", encoding="utf-8") as f:
             f.write(html_content)
 
@@ -308,8 +343,8 @@ class PerformanceReportGenerator:
 def generate_performance_page_from_template(
     name: str,
     date: NDArray[np.datetime64],
-    nav: NDArray[float],
-    benchmark: Optional[NDArray[float]] = None,
+    nav: NDArray[np.floating],
+    benchmark: Optional[NDArray[np.floating]] = None,
     output_html="index.html",
 ):
     """兼容旧接口的包装函数"""
