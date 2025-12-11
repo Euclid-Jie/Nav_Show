@@ -3,14 +3,19 @@ import numpy as np
 from numpy.typing import NDArray
 from typing import Optional, Tuple, Dict, Any
 import json
-import os
+import shutil
 from pathlib import Path
 from pyecharts import options as opts
 from pyecharts.charts import Line, Grid
-from .utils import calculate_indicators, generate_trading_date
-from .config import SQL_HOST, SQL_PASSWORDS
+from nav_interval_metric.nav_metric import NavMetric, IntervalReturnETC
+from nav_interval_metric.utils import generate_trading_date, drawdown_stats
+
+try:
+    from .config import SQL_HOST, SQL_PASSWORDS
+except ImportError:
+    from config import SQL_HOST, SQL_PASSWORDS
+
 import sqlalchemy
-from pyecharts.commons.utils import JsCode
 
 
 class PerformanceReportGenerator:
@@ -25,122 +30,122 @@ class PerformanceReportGenerator:
         date: NDArray[np.datetime64],
         nav: NDArray[np.floating],
         benchmark: Optional[NDArray[np.floating]] = None,
+        last_date: Optional[np.datetime64] = None,
+        last_week_date: Optional[np.datetime64] = None,
     ):
         self.name = name
-        self.df, self.has_benchmark = self._prepare_data(date, nav, benchmark)
+        self.last_date = last_date if last_date is not None else date[-1]
+        self.last_week_date = last_week_date if last_week_date is not None else date[-2]
+        self._prepare_data(date, nav, benchmark)
 
     def _prepare_data(
         self,
         date: NDArray[np.datetime64],
         nav: NDArray[np.floating],
         benchmark: Optional[NDArray[np.floating]] = None,
-    ) -> Tuple[pd.DataFrame, bool]:
+    ):
         """准备数据：对齐日期，计算累计收益和回撤"""
         assert len(date) == len(nav), "日期与净值数据长度不匹配"
-
-        has_benchmark = False
-        data = {"Date": pd.to_datetime(date), "Strategy_Value": nav}
+        self.date = date
+        self.nav = nav / nav[0]  # 归一化
+        self.df = (
+            pd.DataFrame({"date": pd.to_datetime(date), "nav": self.nav})
+            .set_index("date")
+            .sort_index()
+        )
+        cummax = np.maximum.accumulate(self.nav)
+        self.df["drawdown"] = (self.nav - cummax) / cummax
 
         if benchmark is not None:
-            assert len(benchmark) == len(nav), "基准数据长度不匹配"
-            benchmark = benchmark / benchmark[0]  # 归一化
-            data["Benchmark_Value"] = benchmark
-            has_benchmark = True
+            assert len(date) == len(benchmark), "日期与基准数据长度不匹配"
+            self.has_benchmark = True
+            self.df["benchmark"] = benchmark / benchmark[0]
+            self.df["excess_nav"] = self.nav / self.df["benchmark"].values
 
-        df = pd.DataFrame(data).set_index("Date").sort_index()
-
-        # 策略指标
-        df["Strategy_Cumulative_Return"] = df["Strategy_Value"]
-        df["Running_max_global"] = df["Strategy_Cumulative_Return"].cummax()
-        df["Drawdown_global"] = (
-            df["Strategy_Cumulative_Return"] / df["Running_max_global"]
-        ) - 1
-
-        # 基准及超额指标
-        if has_benchmark:
-            df["Benchmark_Cumulative_Return"] = df["Benchmark_Value"]
-            df["Excess_Return_Pct"] = (
-                df["Strategy_Cumulative_Return"].pct_change()
-                - df["Benchmark_Cumulative_Return"].pct_change()
+            cummax_bench = np.maximum.accumulate(
+                np.asarray(self.df["benchmark"].values)
             )
-            df["Excess_Return_Cumulative"] = (
-                1 + df["Excess_Return_Pct"].fillna(0)
-            ).cumprod()
-            df["Running_max_excess"] = df["Excess_Return_Cumulative"].cummax()
-            df["Drawdown_excess"] = (
-                df["Excess_Return_Cumulative"] / df["Running_max_excess"]
-            ) - 1
+            cummax_excess = np.maximum.accumulate(
+                np.asarray(self.df["excess_nav"].values)
+            )
+            self.df["drawdown_benchmark"] = (
+                self.df["benchmark"] - cummax_bench
+            ) / cummax_bench
+            self.df["drawdown_excess"] = (
+                self.df["excess_nav"] - cummax_excess
+            ) / cummax_excess
         else:
-            df["Benchmark_Cumulative_Return"] = 1.0
-            df["Excess_Return_Cumulative"] = 1.0
-            df["Drawdown_excess"] = 0.0
+            self.has_benchmark = False
 
-        return df, has_benchmark
-
-    def calculate_indicators(self) -> Dict[str, Any]:
+    def calculate_indicators(self) -> Dict[str, float]:
         """计算各周期指标"""
         all_data = {}
-        last_day = self.df.index.max()
-
-        dates = self.df.index.values
-        nav = self.df["Strategy_Cumulative_Return"].values
-        bench = (
-            self.df["Benchmark_Cumulative_Return"].values
-            if self.has_benchmark
-            else None
-        )
 
         # 周期定义
-        periods = {
-            "weekly": pd.DateOffset(weeks=1),
-            "1m": pd.DateOffset(months=1),
-            "1y": pd.DateOffset(years=1),
-        }
-
-        # 标准周期
-        for key, offset in periods.items():
-            mask = self.df.index >= (last_day - offset)
-            all_data[key] = calculate_indicators(
-                dates[mask], nav[mask], bench[mask] if self.has_benchmark else None
-            )
-
-        # 特殊周期
-        mask_ytd = self.df.index >= pd.Timestamp(str(last_day.year))
-        all_data["ytd"] = calculate_indicators(
-            dates[mask_ytd],
-            nav[mask_ytd],
-            bench[mask_ytd] if self.has_benchmark else None,
+        base_interval = NavMetric.generate_intervals(
+            last_day=self.last_date, last_week_day=self.last_week_date
         )
-        all_data["all"] = calculate_indicators(dates, nav, bench)
 
-        # 当日指标
-        try:
-            cols = ["Strategy_Cumulative_Return"]
-            if self.has_benchmark:
-                cols.append("Benchmark_Cumulative_Return")
+        # 辅助函数：提取指标数据
+        def _extract_metrics(metric: NavMetric, intervals: list, suffix: str = ""):
+            data = {}
+            # 区间指标
+            data[f"interval{suffix}"] = {
+                "start_date": np.datetime_as_string(metric.begin_date, unit="D"),
+                "end_date": np.datetime_as_string(metric.end_date, unit="D"),
+                "interval_return": metric.base_metric_dict["区间收益率"],
+                "interval_anual_return": metric.base_metric_dict["年化收益率"],
+                "interval_annual_vol": metric.base_metric_dict["年化波动率"],
+                "interval_MDD": metric.base_metric_dict["最大回撤"],
+                "interval_sharpe": metric.base_metric_dict["夏普比率"],
+                "interval_karma": metric.base_metric_dict["卡玛比率"],
+            }
+            # 标准周期指标
+            calculated_intervals = metric.calculate_interval_return(intervals)
+            for _interval in calculated_intervals:
+                data[_interval.name + suffix] = {
+                    "start_date": np.datetime_as_string(_interval.start_date, unit="D"),
+                    "end_date": np.datetime_as_string(_interval.end_date, unit="D"),
+                    "interval_return": _interval.interval_return,
+                    "interval_anual_return": _interval.interval_anual_return,
+                    "interval_annual_vol": _interval.interval_annual_vol,
+                    "interval_MDD": _interval.interval_MDD,
+                    "interval_sharpe": _interval.interval_sharpe,
+                    "interval_karma": _interval.interval_karma,
+                }
+            return data
 
-            last_pct = self.df[cols].pct_change().iloc[-1].fillna(0) * 100
-            s_ret = last_pct["Strategy_Cumulative_Return"]
-            b_ret = (
-                last_pct["Benchmark_Cumulative_Return"] if self.has_benchmark else 0.0
+        # 计算策略指标
+        nav_metric = NavMetric(self.name, self.nav, self.date, "W")
+        all_data.update(_extract_metrics(nav_metric, base_interval))
+
+        if self.has_benchmark:
+            # 计算基准指标
+            benchmark_metric = NavMetric(
+                f"{self.name}_Benchmark",
+                np.asarray(self.df["benchmark"].values, dtype=np.float64),
+                self.date,
+                "W",
             )
-        except IndexError:
-            s_ret, b_ret = 0.0, 0.0
+            all_data.update(
+                _extract_metrics(benchmark_metric, base_interval, "_Benchmark")
+            )
 
-        all_data["daily"] = {
-            "total_return_strategy": s_ret,
-            "total_return_benchmark": b_ret,
-            "total_ari_excess_return": s_ret - b_ret,
-            "start_date": last_day.strftime("%Y-%m-%d"),
-            "end_date": last_day.strftime("%Y-%m-%d"),
-        }
+            # 计算超额收益指标
+            excess_metric = NavMetric(
+                f"{self.name}_Excess",
+                np.asarray(self.df["excess_nav"].values, dtype=np.float64),
+                self.date,
+                "W",
+            )
+            all_data.update(_extract_metrics(excess_metric, base_interval, "_Excess"))
 
         return all_data
 
     def generate_chart_config(self) -> Dict[str, Any]:
         """生成图表配置"""
 
-        date_list = self.df.index.strftime("%Y-%m-%d").tolist()
+        date_list = self.date.astype("M8[D]").astype(str).tolist()
 
         def _fmt(s):
             return [round((x - 1) * 100, 2) for x in s]
@@ -154,7 +159,7 @@ class PerformanceReportGenerator:
             .add_xaxis(date_list)
             .add_yaxis(
                 "策略收益",  # 修改：统一名称，避免Tooltip混淆
-                _fmt(self.df["Strategy_Cumulative_Return"]),
+                _fmt(self.nav),
                 is_smooth=False,
                 is_symbol_show=False,
                 linestyle_opts=opts.LineStyleOpts(width=2, color="#d9534f"),
@@ -163,14 +168,14 @@ class PerformanceReportGenerator:
 
         if self.has_benchmark:
             line.add_yaxis(
-                "基准收益",  # 修改：增加“收益”后缀
-                _fmt(self.df["Benchmark_Cumulative_Return"]),
+                "基准收益",
+                _fmt(self.df["benchmark"]),
                 is_smooth=False,
                 is_symbol_show=False,
                 linestyle_opts=opts.LineStyleOpts(width=2, color="#5cb85c"),
             ).add_yaxis(
                 "超额收益",
-                _fmt(self.df["Excess_Return_Cumulative"]),
+                _fmt(self.df["excess_nav"]),
                 is_smooth=False,
                 is_symbol_show=False,
                 linestyle_opts=opts.LineStyleOpts(width=1, color="#007bff"),
@@ -179,7 +184,7 @@ class PerformanceReportGenerator:
 
         line.set_global_opts(
             title_opts=opts.TitleOpts(
-                title=f"{self.name}收益回撤走势",  # 修改：移除self.name，使用通用标题
+                title=f"收益回撤走势",  # 修改：移除self.name，使用通用标题
                 pos_left="center",
                 title_textstyle_opts=opts.TextStyleOpts(
                     font_size=20, font_weight="bold", color="#333"
@@ -226,7 +231,7 @@ class PerformanceReportGenerator:
             .add_xaxis(date_list)
             .add_yaxis(
                 "策略回撤",  # 修改：明确为回撤
-                _fmt_dd(self.df["Drawdown_global"]),
+                _fmt_dd(self.df["drawdown"]),
                 is_smooth=False,
                 is_symbol_show=False,
                 linestyle_opts=opts.LineStyleOpts(width=1, color="#d9534f"),
@@ -237,7 +242,7 @@ class PerformanceReportGenerator:
         if self.has_benchmark:
             dd_chart.add_yaxis(
                 "超额收益回撤",  # 修改：明确含义
-                _fmt_dd(self.df["Drawdown_excess"].dropna()),
+                _fmt_dd(self.df["drawdown_excess"].dropna()),
                 is_smooth=False,
                 is_symbol_show=False,
                 linestyle_opts=opts.LineStyleOpts(width=1, color="#5cb85c"),
@@ -261,7 +266,11 @@ class PerformanceReportGenerator:
     def render(self, output_html: str = "index.html"):
         """渲染HTML报告"""
         base_dir = Path(__file__).parent
-        template_path = base_dir / "templates" / "report.html"
+        template_path = (
+            base_dir
+            / "templates"
+            / ("report.html" if self.has_benchmark else "report_no_benchmark.html")
+        )
 
         if not template_path.exists():
             raise FileNotFoundError(f"模板文件未找到: {template_path}")
@@ -272,13 +281,17 @@ class PerformanceReportGenerator:
         # 统一替换模板中的静态资源路径为 ./assets/...
         # 适配可能存在的不同写法（绝对/相对），尽可能规范到同一路径
         html_content = (
-            html_content
-            .replace("Nav_Show/assets/css/style.css", "./assets/css/style.css")
+            html_content.replace(
+                "Nav_Show/assets/css/style.css", "./assets/css/style.css"
+            )
             .replace("assets/css/style.css", "./assets/css/style.css")
             .replace("Nav_Show/assets/js/main.js", "./assets/js/main.js")
             .replace("assets/js/main.js", "./assets/js/main.js")
         )
-
+        # 修改h1标题
+        html_content = html_content.replace(
+            "<h1>区间基础指标</h1>", f"<h1>{self.name} 业绩报告</h1>"
+        )
         js_data = f"""
         window.reportData = {{
             chartConfig: {json.dumps(self.generate_chart_config())},
@@ -310,29 +323,12 @@ class PerformanceReportGenerator:
             html_content = html_content.replace("</head>", f"{css_injection}</head>")
 
         # 将 Nav_Show/assets 复制到输出目录的 assets 下，保证本地预览和 GitHub Pages 可用
-        try:
-            import shutil
-            output_path = Path(output_html)
-            output_dir = output_path.parent if output_path.parent != Path("") else Path(".")
-            src_assets = base_dir / "assets"
-            dest_assets = output_dir / "assets"
-            if src_assets.exists():
-                # Python 3.8+ 支持 dirs_exist_ok，若不存在则手动处理
-                try:
-                    shutil.copytree(src_assets, dest_assets, dirs_exist_ok=True)
-                except TypeError:
-                    # 兼容旧版：若已存在则逐文件拷贝
-                    if not dest_assets.exists():
-                        shutil.copytree(src_assets, dest_assets)
-                    else:
-                        for root, dirs, files in os.walk(src_assets):
-                            rel = Path(root).relative_to(src_assets)
-                            target_root = dest_assets / rel
-                            target_root.mkdir(parents=True, exist_ok=True)
-                            for fn in files:
-                                shutil.copy2(Path(root) / fn, target_root / fn)
-        except Exception as e:
-            print(f"复制静态资源失败: {e}")
+        output_path = Path(output_html)
+        output_dir = output_path.parent if output_path.parent != Path("") else Path(".")
+        src_assets = base_dir / "assets"
+        dest_assets = output_dir / "assets"
+        if src_assets.exists() and output_dir != Path("."):
+            shutil.copytree(src_assets, dest_assets, dirs_exist_ok=True)
 
         with open(output_html, "w", encoding="utf-8") as f:
             f.write(html_content)
@@ -359,9 +355,7 @@ if __name__ == "__main__":
     )
     benchmark_code = "000852.SH"
 
-    data_path = Path(
-        r"C:\Euclid_Jie\nav_data_tracking\cache_data\SQF225_星阔上林1号中证1000指数增强.csv"
-    )
+    data_path = Path("SQF225_星阔上林1号中证1000指数增强.csv")
 
     raw_data = pd.read_csv(data_path)
     raw_data["日期"] = pd.to_datetime(raw_data["日期"])

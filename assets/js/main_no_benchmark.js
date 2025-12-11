@@ -37,21 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 dateEl.innerText = `${formatDate(sData.start_date)} ~ ${formatDate(sData.end_date)}`;
             }
 
-            // 设置策略收益
+            // 设置策略收益, 年化收益, 最大回撤
             const sEl = el(`summary-strategy-${period}`);
             if (sEl) sEl.innerText = formatPercent(sData.interval_return);
-
-            // 如果有基准，设置基准和超额
-            if (hasBenchmark) {
-                const bData = allData[`${period}_Benchmark`];
-                const eData = allData[`${period}_Excess`];
-
-                const bEl = el(`summary-benchmark-${period}`);
-                const eEl = el(`summary-excess-${period}`);
-
-                if (bEl && bData) bEl.innerText = formatPercent(bData.interval_return);
-                if (eEl && eData) eEl.innerText = formatPercent(eData.interval_return);
-            }
+            const sAnnualEl = el(`summary-strategy-annual-${period}`);
+            if (sAnnualEl) sAnnualEl.innerText = formatPercent(sData.interval_anual_return);
+            const sMddEl = el(`summary-strategy-mdd-${period}`);
+            if (sMddEl) sMddEl.innerText = formatPercent(sData.interval_MDD);
         });
     };
 
@@ -80,25 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
         el('ind-mdd-strategy').innerText = formatPercent(sData.interval_MDD);
         el('ind-sharpe-strategy').innerText = formatNumber(sData.interval_sharpe);
         el('ind-karma-strategy').innerText = formatNumber(sData.interval_karma);
-
-        // --- 基准列 & 超额列 (如果有) ---
-        if (hasBenchmark && bData && eData) {
-            // 基准
-            el('ind-return-benchmark').innerText = formatPercent(bData.interval_return);
-            el('ind-annual-return-benchmark').innerText = formatPercent(bData.interval_anual_return);
-            el('ind-annual-vol-benchmark').innerText = formatPercent(bData.interval_annual_vol);
-            el('ind-mdd-benchmark').innerText = formatPercent(bData.interval_MDD);
-            el('ind-sharpe-benchmark').innerText = formatNumber(bData.interval_sharpe);
-            el('ind-karma-benchmark').innerText = formatNumber(bData.interval_karma);
-
-            // 超额
-            el('ind-return-excess').innerText = formatPercent(eData.interval_return);
-            el('ind-annual-return-excess').innerText = formatPercent(eData.interval_anual_return);
-            el('ind-annual-vol-excess').innerText = formatPercent(eData.interval_annual_vol);
-            el('ind-mdd-excess').innerText = formatPercent(eData.interval_MDD);
-            el('ind-sharpe-excess').innerText = formatNumber(eData.interval_sharpe);
-            el('ind-karma-excess').innerText = formatNumber(eData.interval_karma);
-        }
     };
 
     // 绑定按钮点击事件
