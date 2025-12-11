@@ -3,37 +3,19 @@ import numpy as np
 from numpy.typing import NDArray
 from typing import Optional, Tuple, Dict, Any
 import json
-import os
+import shutil
 from pathlib import Path
 from pyecharts import options as opts
 from pyecharts.charts import Line, Grid
 from nav_interval_metric.nav_metric import NavMetric, IntervalReturnETC
+from nav_interval_metric.utils import generate_trading_date, drawdown_stats
 
 try:
-    from .utils import calculate_indicators, generate_trading_date
     from .config import SQL_HOST, SQL_PASSWORDS
 except ImportError:
-    from utils import calculate_indicators, generate_trading_date
     from config import SQL_HOST, SQL_PASSWORDS
 
 import sqlalchemy
-
-
-class NumpyEncoder(json.JSONEncoder):
-    def default(self, obj):
-        # 移除 np.int_ 和 np.float_ 以兼容 NumPy 2.0
-        if isinstance(obj, (np.intc, np.intp, np.int8,
-                            np.int16, np.int32, np.int64, np.uint8,
-                            np.uint16, np.uint32, np.uint64)):
-            return int(obj)
-        elif isinstance(obj, (np.float16, np.float32,
-                              np.float64)):
-            return float(obj)
-        elif isinstance(obj, (np.ndarray,)):
-            return obj.tolist()
-        elif isinstance(obj, (np.datetime64, pd.Timestamp)):
-            return str(obj)
-        return json.JSONEncoder.default(self, obj)
 
 
 class PerformanceReportGenerator:
@@ -109,9 +91,11 @@ class PerformanceReportGenerator:
             data = {}
             # 区间指标
             data[f"interval{suffix}"] = {
-                "start_date": np.datetime_as_string(metric.begin_date, unit='D'),
-                "end_date": np.datetime_as_string(metric.end_date, unit='D'),
+                "start_date": np.datetime_as_string(metric.begin_date, unit="D"),
+                "end_date": np.datetime_as_string(metric.end_date, unit="D"),
                 "interval_return": metric.base_metric_dict["区间收益率"],
+                "interval_anual_return": metric.base_metric_dict["年化收益率"],
+                "interval_annual_vol": metric.base_metric_dict["年化波动率"],
                 "interval_MDD": metric.base_metric_dict["最大回撤"],
                 "interval_sharpe": metric.base_metric_dict["夏普比率"],
                 "interval_karma": metric.base_metric_dict["卡玛比率"],
@@ -120,9 +104,11 @@ class PerformanceReportGenerator:
             calculated_intervals = metric.calculate_interval_return(intervals)
             for _interval in calculated_intervals:
                 data[_interval.name + suffix] = {
-                    "start_date": np.datetime_as_string(_interval.start_date, unit='D'),
-                    "end_date": np.datetime_as_string(_interval.end_date, unit='D'),
+                    "start_date": np.datetime_as_string(_interval.start_date, unit="D"),
+                    "end_date": np.datetime_as_string(_interval.end_date, unit="D"),
                     "interval_return": _interval.interval_return,
+                    "interval_anual_return": _interval.interval_anual_return,
+                    "interval_annual_vol": _interval.interval_annual_vol,
                     "interval_MDD": _interval.interval_MDD,
                     "interval_sharpe": _interval.interval_sharpe,
                     "interval_karma": _interval.interval_karma,
@@ -198,7 +184,7 @@ class PerformanceReportGenerator:
 
         line.set_global_opts(
             title_opts=opts.TitleOpts(
-                title=f"{self.name}收益回撤走势",  # 修改：移除self.name，使用通用标题
+                title=f"收益回撤走势",  # 修改：移除self.name，使用通用标题
                 pos_left="center",
                 title_textstyle_opts=opts.TextStyleOpts(
                     font_size=20, font_weight="bold", color="#333"
@@ -280,7 +266,11 @@ class PerformanceReportGenerator:
     def render(self, output_html: str = "index.html"):
         """渲染HTML报告"""
         base_dir = Path(__file__).parent
-        template_path = base_dir / "templates" / "report.html"
+        template_path = (
+            base_dir
+            / "templates"
+            / ("report.html" if self.has_benchmark else "report_no_benchmark.html")
+        )
 
         if not template_path.exists():
             raise FileNotFoundError(f"模板文件未找到: {template_path}")
@@ -298,11 +288,14 @@ class PerformanceReportGenerator:
             .replace("Nav_Show/assets/js/main.js", "./assets/js/main.js")
             .replace("assets/js/main.js", "./assets/js/main.js")
         )
-
+        # 修改h1标题
+        html_content = html_content.replace(
+            "<h1>区间基础指标</h1>", f"<h1>{self.name} 业绩报告</h1>"
+        )
         js_data = f"""
         window.reportData = {{
             chartConfig: {json.dumps(self.generate_chart_config())},
-            allData: {json.dumps(self.calculate_indicators(), cls=NumpyEncoder)},
+            allData: {json.dumps(self.calculate_indicators())},
             hasBenchmark: {str(self.has_benchmark).lower()}
         }};
         """
@@ -330,32 +323,12 @@ class PerformanceReportGenerator:
             html_content = html_content.replace("</head>", f"{css_injection}</head>")
 
         # 将 Nav_Show/assets 复制到输出目录的 assets 下，保证本地预览和 GitHub Pages 可用
-        try:
-            import shutil
-
-            output_path = Path(output_html)
-            output_dir = (
-                output_path.parent if output_path.parent != Path("") else Path(".")
-            )
-            src_assets = base_dir / "assets"
-            dest_assets = output_dir / "assets"
-            if src_assets.exists():
-                # Python 3.8+ 支持 dirs_exist_ok，若不存在则手动处理
-                try:
-                    shutil.copytree(src_assets, dest_assets, dirs_exist_ok=True)
-                except TypeError:
-                    # 兼容旧版：若已存在则逐文件拷贝
-                    if not dest_assets.exists():
-                        shutil.copytree(src_assets, dest_assets)
-                    else:
-                        for root, dirs, files in os.walk(src_assets):
-                            rel = Path(root).relative_to(src_assets)
-                            target_root = dest_assets / rel
-                            target_root.mkdir(parents=True, exist_ok=True)
-                            for fn in files:
-                                shutil.copy2(Path(root) / fn, target_root / fn)
-        except Exception as e:
-            print(f"复制静态资源失败: {e}")
+        output_path = Path(output_html)
+        output_dir = output_path.parent if output_path.parent != Path("") else Path(".")
+        src_assets = base_dir / "assets"
+        dest_assets = output_dir / "assets"
+        if src_assets.exists() and output_dir != Path("."):
+            shutil.copytree(src_assets, dest_assets, dirs_exist_ok=True)
 
         with open(output_html, "w", encoding="utf-8") as f:
             f.write(html_content)
@@ -382,9 +355,7 @@ if __name__ == "__main__":
     )
     benchmark_code = "000852.SH"
 
-    data_path = Path(
-        r"C:\Euclid_Jie\nav_data_tracking\cache_data\SQF225_星阔上林1号中证1000指数增强.csv"
-    )
+    data_path = Path("SQF225_星阔上林1号中证1000指数增强.csv")
 
     raw_data = pd.read_csv(data_path)
     raw_data["日期"] = pd.to_datetime(raw_data["日期"])

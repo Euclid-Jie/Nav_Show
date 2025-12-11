@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>策略业绩报告</title>
+    <script src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- STYLE_INJECTION -->
+</head>
+
+<body>
+    <div class="container">
+        <h1>区间基础指标</h1>
+
+        <!-- 顶部概览卡片 -->
+        <div class="summary-cards">
+            <!-- 近一周 -->
+            <div class="card_small">
+                <p class="period-title">近一周</p>
+                <p class="date-range" id="summary-date-recent_week">--</p>
+                <div class="metric-row">
+                    <div class="metric-item">
+                        <p class="label" style="text-align: left;">区间收益</p>
+                        <p class="value strategy-color" id="summary-strategy-recent_week" style="text-align: left;">--</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 近一月 -->
+            <div class="card_small">
+                <p class="period-title">近一月</p>
+                <p class="date-range" id="summary-date-recent_month">--</p>
+                <div class="metric-row">
+                    <div class="metric-item">
+                        <p class="label" style="text-align: left;">区间收益</p>
+                        <p class="value strategy-color" id="summary-strategy-recent_month" style="text-align: left;">--</p>
+                    </div>
+                </div>
+            </div>            
+            <!-- 今年以来 -->
+            <div class="card">
+                <p class="period-title">今年以来</p>
+                <p class="date-range" id="summary-date-ytd">--</p>
+                <div class="metric-row">
+                    <div class="metric-item">
+                        <p class="label">区间收益</p>
+                        <p class="value strategy-color" id="summary-strategy-ytd">--</p>
+                    </div>
+                    <div class="metric-item">
+                        <p class="label">年化收益</p>
+                        <p class="value strategy-color" id="summary-strategy-annual-ytd">--</p>
+                    </div>
+                    <div class="metric-item">
+                        <p class="label">最大回撤</p>
+                        <p class="value drawdown-color" id="summary-strategy-mdd-ytd">--</p>    
+                    </div>
+                </div>
+            </div>
+            <!-- 近一年 -->
+            <div class="card">
+                <p class="period-title">近一年</p>
+                <p class="date-range" id="summary-date-recent_year">--</p>
+                <div class="metric-row">
+                    <div class="metric-item">
+                        <p class="label">区间收益</p>
+                        <p class="value strategy-color" id="summary-strategy-recent_year">--</p>
+                    </div>
+                    <div class="metric-item">
+                        <p class="label">年化收益</p>
+                        <p class="value strategy-color" id="summary-strategy-annual-recent_year">--</p>
+                    </div>
+                    <div class="metric-item">
+                        <p class="label">最大回撤</p>
+                        <p class="value drawdown-color" id="summary-strategy-mdd-recent_year">--</p>    
+                    </div>
+                </div>
+            </div>
+            <!-- 成立以来 (Interval) -->
+            <div class="card">
+                <p class="period-title">成立以来</p>
+                <p class="date-range" id="summary-date-interval">--</p>
+                <div class="metric-row">
+                    <div class="metric-item">
+                        <p class="label">区间收益</p>
+                        <p class="value strategy-color" id="summary-strategy-interval">--</p>
+                    </div>
+                    <div class="metric-item">
+                        <p class="label">年化收益</p>
+                        <p class="value strategy-color" id="summary-strategy-annual-interval">--</p>
+                    </div>
+                    <div class="metric-item">
+                        <p class="label">最大回撤</p>
+                        <p class="value drawdown-color" id="summary-strategy-mdd-interval">--</p>    
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="chart-section">
+            <div id="chart-container"></div>
+        </div>
+        <!-- 详细指标区域 -->
+        <div class="indicators-section">
+            <div class="indicators-header">
+                <h2>区间详细指标
+                    <span id="indicator-date-range" class="date-range-header"></span>
+                </h2>
+                <div class="period-buttons">
+                    <button class="period-btn" data-period="ytd">今年以来</button>
+                    <button class="period-btn" data-period="recent_year">近一年</button>
+                    <button class="period-btn active" data-period="interval">成立以来</button>
+                </div>
+            </div>
+            <div class="indicators-grid-no-benchmark">
+                <div class="indicator-column strategy-column">
+                    <h3>策略表现</h3>
+                    <div class="indicator-grid">
+                        <div class="indicator-card">
+                            <p class="metric-title">区间收益率</p>
+                            <p class="metric-value strategy-color" id="ind-return-strategy">--</p>
+                        </div>
+                        <div class="indicator-card">
+                            <p class="metric-title">年化收益率</p>
+                            <p class="metric-value strategy-color" id="ind-annual-return-strategy">--</p>
+                        </div>
+                        <div class="indicator-card">
+                            <p class="metric-title">年化波动率</p>
+                            <p class="metric-value strategy-color" id="ind-annual-vol-strategy">--</p>
+                        </div>
+                        <div class="indicator-card">
+                            <p class="metric-title">最大回撤</p>
+                            <p class="metric-value drawdown-color" id="ind-mdd-strategy">--</p>
+                        </div>
+                        <div class="indicator-card">
+                            <p class="metric-title">夏普比率 (Sharpe)</p>
+                            <p class="metric-value" id="ind-sharpe-strategy">--</p>
+                        </div>
+                        <div class="indicator-card">
+                            <p class="metric-title">卡玛比率 (Calmar)</p>
+                            <p class="metric-value" id="ind-karma-strategy">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+    <!-- DATA_INJECTION -->
+    <script src="assets/js/main_no_benchmark.js"></script>
+</body>
+
+</html>

@@ -49,13 +49,16 @@ h3 {
 
 /* 顶部概览卡片 */
 .summary-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 20px;
     margin-bottom: 30px;
 }
 
 .card {
+    flex: 1;
+    min-width: 240px; /* 卡片最小宽度 */
+    max-width: calc(25% - 15px); /* 4列布局，考虑gap */
     background-color: #fff;
     border: 1px solid #eaeaea;
     border-radius: 10px;
@@ -76,6 +79,32 @@ h3 {
 }
 
 .card .date-range {
+    font-size: 12px;
+    color: #999;
+    margin: 0 0 15px 0;
+}
+
+.card_small {
+    background-color: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 140px;   /* 限制整体宽度，比默认 card 更窄 */
+}
+
+.card_small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.card_small .period-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.card_small .date-range {
     font-size: 12px;
     color: #999;
     margin: 0 0 15px 0;
@@ -173,6 +202,11 @@ h3 {
     gap: 30px;
 }
 
+.indicators-grid-no-benchmark {
+    display: grid;
+    gap: 30px;
+}
+
 .indicator-column {
     background: #fcfcfc;
     border-radius: 10px;
@@ -196,6 +230,28 @@ h3 {
     border-bottom: none;
 }
 
+/* 两行三列的Grid布局 */
+.indicator-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* 三列 */
+    grid-template-rows: repeat(2, auto);    /* 两行 */
+    gap: 15px;  /* 卡片间距 */
+}
+
+/* 响应式设计 */
+@media (max-width: 992px) {
+    .indicator-grid {
+        grid-template-columns: repeat(2, 1fr);  /* 平板：两列 */
+        grid-template-rows: repeat(3, auto);    /* 三行 */
+    }
+}
+
+@media (max-width: 576px) {
+    .indicator-grid {
+        grid-template-columns: 1fr;  /* 手机：单列 */
+        grid-template-rows: repeat(6, auto);    /* 六行 */
+    }
+}
 .metric-title {
     margin: 0;
     color: #666;
