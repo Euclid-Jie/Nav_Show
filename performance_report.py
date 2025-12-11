@@ -7,8 +7,12 @@ import shutil
 from pathlib import Path
 from pyecharts import options as opts
 from pyecharts.charts import Line, Grid
-from nav_interval_metric.nav_metric import NavMetric, IntervalReturnETC
-from nav_interval_metric.utils import generate_trading_date, drawdown_stats
+try:
+    from .nav_interval_metric.nav_metric import NavMetric
+    from .nav_interval_metric.utils import generate_trading_date
+except ImportError:
+    from nav_interval_metric.nav_metric import NavMetric
+    from nav_interval_metric.utils import generate_trading_date
 
 try:
     from .config import SQL_HOST, SQL_PASSWORDS
