@@ -263,7 +263,7 @@ class PerformanceReportGenerator:
 
         grid = Grid(init_opts=opts.InitOpts(width="100%", height="700px"))
         grid.add(line, grid_opts=opts.GridOpts(pos_top="12%", pos_bottom="33%"))
-        grid.add(dd_chart, grid_opts=opts.GridOpts(pos_top="74%", pos_bottom="7%"))
+        grid.add(dd_chart, grid_opts=opts.GridOpts(pos_top="75%", pos_bottom="5%"))
 
         return json.loads(grid.dump_options_with_quotes())
 
