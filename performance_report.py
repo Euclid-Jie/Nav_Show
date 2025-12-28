@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 from pyecharts import options as opts
 from pyecharts.charts import Line, Grid
+
 try:
     from .nav_interval_metric.nav_metric import NavMetric
     from .nav_interval_metric.utils import generate_trading_date
@@ -194,7 +195,7 @@ class PerformanceReportGenerator:
                     font_size=20, font_weight="bold", color="#333"
                 ),
             ),
-            legend_opts=opts.LegendOpts(pos_top="8%", pos_left="68%"),
+            legend_opts=opts.LegendOpts(pos_top="8%", pos_left="66%"),
             tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
             axispointer_opts=opts.AxisPointerOpts(
                 is_show=True, link=[{"xAxisIndex": "all"}]
@@ -205,7 +206,10 @@ class PerformanceReportGenerator:
             ),
             datazoom_opts=[
                 opts.DataZoomOpts(
-                    type_="slider", xaxis_index=[0, 1], range_start=0, range_end=100
+                    type_="inside",
+                    xaxis_index=[0, 1],
+                    range_start=0,
+                    range_end=100,
                 )
             ],
             toolbox_opts=opts.ToolboxOpts(
@@ -257,13 +261,13 @@ class PerformanceReportGenerator:
             yaxis_opts=opts.AxisOpts(
                 name="回撤 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %")
             ),
-            legend_opts=opts.LegendOpts(is_show=True, pos_left="73%", pos_top="70%"),
+            legend_opts=opts.LegendOpts(is_show=True, pos_left="66%", pos_top="66%"),
             xaxis_opts=opts.AxisOpts(is_show=False),
         )
 
         grid = Grid(init_opts=opts.InitOpts(width="100%", height="700px"))
-        grid.add(line, grid_opts=opts.GridOpts(pos_top="12%", pos_bottom="33%"))
-        grid.add(dd_chart, grid_opts=opts.GridOpts(pos_top="75%", pos_bottom="5%"))
+        grid.add(line, grid_opts=opts.GridOpts(pos_top="12%", pos_bottom="38%"))
+        grid.add(dd_chart, grid_opts=opts.GridOpts(pos_top="70%", pos_bottom="10%"))
 
         return json.loads(grid.dump_options_with_quotes())
 
@@ -357,11 +361,23 @@ if __name__ == "__main__":
     engine_data = sqlalchemy.create_engine(
         f"mysql+pymysql://dev:{SQL_PASSWORDS}@{SQL_HOST}:3306/UpdatedData?charset=utf8mb4"
     )
-    benchmark_code = "000852.SH"
+    engine_nav = sqlalchemy.create_engine(
+        f"mysql+pymysql://dev:{SQL_PASSWORDS}@{SQL_HOST}:3306/Nav?charset=utf8mb4"
+    )
+    benchmark_code = "000905.SH"
 
-    data_path = Path("SQF225_星阔上林1号中证1000指数增强.csv")
-
-    raw_data = pd.read_csv(data_path)
+    raw_data = pd.read_sql_query(
+        f"SELECT file_name, date,unit_net_value,accum_net_value FROM nav_main WHERE register_number = 'SVC177'",
+        engine_nav,
+    )
+    raw_data.rename(
+        columns={
+            "date": "日期",
+            "unit_net_value": "单位净值",
+            "accum_net_value": "复权净值",
+        },
+        inplace=True,
+    )
     raw_data["日期"] = pd.to_datetime(raw_data["日期"])
     raw_data.set_index("日期", inplace=True)
 
@@ -372,6 +388,7 @@ if __name__ == "__main__":
         f"SELECT date,CLOSE FROM bench_basic_data WHERE code = '{benchmark_code}'",
         engine_data,
     )
+    assert len(bench_df) > 0, "未获取到基准数据，请检查基准代码是否正确"
     bench_df["date"] = pd.to_datetime(bench_df["date"])
     bench_df.set_index("date", inplace=True)
 
@@ -389,7 +406,7 @@ if __name__ == "__main__":
     bench_df = bench_df.reindex(nav_series.index)
 
     generate_performance_page_from_template(
-        name="星阔上林1号中证1000指数增强",
+        name=raw_data["file_name"].iloc[0].split(".")[0],
         date=date,
         nav=nav,
         benchmark=bench_df["CLOSE"].values,
