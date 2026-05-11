@@ -1,5 +1,5 @@
 body {
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f4f6f9;
@@ -33,32 +33,31 @@ h2 {
 }
 
 h3 {
-    font-size: 16px;
-    color: #555;
-    margin-top: 0;
-    margin-bottom: 15px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 16px 0;
     padding-bottom: 10px;
     border-bottom: 2px solid #eee;
 }
 
-/* 颜色定义 */
+/* 颜色 */
 .strategy-color { color: #d9534f; font-weight: bold; }
 .benchmark-color { color: #5cb85c; font-weight: bold; }
 .excess-color { color: #007bff; font-weight: bold; }
-.drawdown-color { color: #28a745; font-weight: bold; } /* 回撤通常用绿色表示安全/跌幅 */
+.drawdown-color { color: #e67e22; font-weight: bold; }
 
 /* 顶部概览卡片 */
 .summary-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
     margin-bottom: 30px;
 }
 
 .card {
-    flex: 1;
-    min-width: 240px; /* 卡片最小宽度 */
-    max-width: calc(25% - 15px); /* 4列布局，考虑gap */
     background-color: #fff;
     border: 1px solid #eaeaea;
     border-radius: 10px;
@@ -72,47 +71,22 @@ h3 {
 }
 
 .card .period-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: #333;
-    margin: 0 0 5px 0;
+    margin: 0 0 4px 0;
 }
 
 .card .date-range {
-    font-size: 12px;
-    color: #999;
-    margin: 0 0 15px 0;
-}
-
-.card_small {
-    background-color: #fff;
-    border: 1px solid #eaeaea;
-    border-radius: 10px;
-    padding: 20px;
-    max-width: 140px;   /* 限制整体宽度，比默认 card 更窄 */
-}
-
-.card_small:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-}
-
-.card_small .period-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 5px 0;
-}
-
-.card_small .date-range {
-    font-size: 12px;
-    color: #999;
-    margin: 0 0 15px 0;
+    font-size: 11px;
+    color: #aaa;
+    margin: 0 0 14px 0;
 }
 
 .metric-row {
     display: flex;
     justify-content: space-between;
+    gap: 8px;
 }
 
 .metric-item {
@@ -121,13 +95,14 @@ h3 {
 }
 
 .metric-item .label {
-    font-size: 12px;
-    color: #888;
+    font-size: 11px;
+    color: #999;
     margin: 0 0 4px 0;
 }
 
 .metric-item .value {
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 600;
     margin: 0;
 }
 
@@ -142,6 +117,7 @@ h3 {
 
 #chart-container {
     width: 100%;
+    /* 高度由 JS 动态设置，此处为回退值 */
     height: 600px;
 }
 
@@ -149,22 +125,21 @@ h3 {
 .indicators-section {
     background-color: #fff;
     border-radius: 10px;
-    /* padding: 20px; */ /* 容器已有padding */
 }
 
 .indicators-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 12px;
 }
 
 .date-range-header {
     font-size: 14px;
     font-weight: normal;
-    color: #888;
+    color: #aaa;
 }
 
 .period-buttons {
@@ -184,11 +159,10 @@ h3 {
     color: #666;
     font-weight: 500;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
-.period-btn:hover {
-    color: #333;
-}
+.period-btn:hover { color: #333; }
 
 .period-btn.active {
     background-color: #fff;
@@ -196,15 +170,11 @@ h3 {
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
+/* 有 benchmark：三列 */
 .indicators-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-}
-
-.indicators-grid-no-benchmark {
-    display: grid;
-    gap: 30px;
+    gap: 24px;
 }
 
 .indicator-column {
@@ -214,84 +184,91 @@ h3 {
     border: 1px solid #f0f0f0;
 }
 
-.indicator-column.strategy-column { border-top: 4px solid #d9534f; }
-.indicator-column.benchmark-column { border-top: 4px solid #5cb85c; }
-.indicator-column.excess-column { border-top: 4px solid #007bff; }
+.indicator-column.strategy-column { border-top: 3px solid #d9534f; }
+.indicator-column.benchmark-column { border-top: 3px solid #5cb85c; }
+.indicator-column.excess-column { border-top: 3px solid #007bff; }
 
+/* 有 benchmark 时的指标行 */
 .indicator-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
+    padding: 11px 0;
     border-bottom: 1px dashed #eee;
 }
 
-.indicator-card:last-child {
-    border-bottom: none;
-}
+.indicator-card:last-child { border-bottom: none; }
 
-/* 两行三列的Grid布局 */
-.indicator-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);  /* 三列 */
-    grid-template-rows: repeat(2, auto);    /* 两行 */
-    gap: 15px;  /* 卡片间距 */
-}
-
-/* 响应式设计 */
-@media (max-width: 992px) {
-    .indicator-grid {
-        grid-template-columns: repeat(2, 1fr);  /* 平板：两列 */
-        grid-template-rows: repeat(3, auto);    /* 三行 */
-    }
-}
-
-@media (max-width: 576px) {
-    .indicator-grid {
-        grid-template-columns: 1fr;  /* 手机：单列 */
-        grid-template-rows: repeat(6, auto);    /* 六行 */
-    }
-}
 .metric-title {
     margin: 0;
-    color: #666;
-    font-size: 14px;
+    color: #888;
+    font-size: 13px;
 }
 
 .metric-value {
     margin: 0;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     color: #333;
 }
 
-/* 响应式调整 */
-@media (max-width: 900px) {
-    .indicators-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .summary-cards {
-        grid-template-columns: 1fr 1fr;
-    }
+/* 无 benchmark：2×3 大卡片网格 */
+.indicators-grid-solo {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
 
-@media (max-width: 600px) {
-    .summary-cards {
-        grid-template-columns: 1fr;
-    }
-    
-    .indicators-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .period-buttons {
-        width: 100%;
-        overflow-x: auto;
-    }
-    
-    .period-btn {
-        white-space: nowrap;
-    }
+.solo-metric-card {
+    background: #fcfcfc;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: box-shadow 0.2s;
+}
+
+.solo-metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.solo-metric-card .solo-label {
+    font-size: 12px;
+    color: #999;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0;
+}
+
+.solo-metric-card .solo-value {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.1;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+    .container { padding: 24px; }
+    .summary-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    body { padding: 12px; }
+    .container { padding: 16px; border-radius: 8px; }
+    h1 { font-size: 20px; margin-bottom: 24px; }
+    .summary-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .indicators-grid { grid-template-columns: 1fr; }
+    .indicators-grid-solo { grid-template-columns: repeat(2, 1fr); }
+    .solo-metric-card .solo-value { font-size: 22px; }
+    .indicators-header { flex-direction: column; align-items: flex-start; }
+    .period-buttons { width: 100%; overflow-x: auto; }
+}
+
+@media (max-width: 480px) {
+    .summary-cards { grid-template-columns: 1fr; }
+    .indicators-grid-solo { grid-template-columns: 1fr; }
 }

@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>策略业绩报告</title>
     <script src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <!-- STYLE_INJECTION -->
+    <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 
 <body>
@@ -15,7 +15,6 @@
 
         <!-- 顶部概览卡片 -->
         <div class="summary-cards">
-            <!-- 近一周 -->
             <div class="card">
                 <p class="period-title">近一周</p>
                 <p class="date-range" id="summary-date-recent_week">--</p>
@@ -34,7 +33,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 近一月 -->
             <div class="card">
                 <p class="period-title">近一月</p>
                 <p class="date-range" id="summary-date-recent_month">--</p>
@@ -53,7 +51,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 今年以来 -->
             <div class="card">
                 <p class="period-title">今年以来</p>
                 <p class="date-range" id="summary-date-ytd">--</p>
@@ -72,7 +69,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 成立以来 (Interval) -->
             <div class="card">
                 <p class="period-title">成立以来</p>
                 <p class="date-range" id="summary-date-interval">--</p>
@@ -111,8 +107,8 @@
                 </div>
             </div>
 
+            <!-- 有 benchmark：三列 -->
             <div class="indicators-grid">
-                <!-- 第一列: 超额表现 -->
                 <div class="indicator-column excess-column benchmark-item">
                     <h3>超额表现</h3>
                     <div class="indicator-card">
@@ -141,7 +137,6 @@
                     </div>
                 </div>
 
-                <!-- 第二列: 策略表现 -->
                 <div class="indicator-column strategy-column">
                     <h3>策略表现</h3>
                     <div class="indicator-card">
@@ -170,7 +165,6 @@
                     </div>
                 </div>
 
-                <!-- 第三列: 基准表现 -->
                 <div class="indicator-column benchmark-column benchmark-item">
                     <h3>基准表现</h3>
                     <div class="indicator-card">
@@ -199,10 +193,38 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 无 benchmark：2×3 大卡片 -->
+            <div class="indicators-grid-solo" style="display: none;">
+                <div class="solo-metric-card">
+                    <p class="solo-label">区间收益率</p>
+                    <p class="solo-value strategy-color" id="solo-return">--</p>
+                </div>
+                <div class="solo-metric-card">
+                    <p class="solo-label">年化收益率</p>
+                    <p class="solo-value strategy-color" id="solo-annual-return">--</p>
+                </div>
+                <div class="solo-metric-card">
+                    <p class="solo-label">年化波动率</p>
+                    <p class="solo-value strategy-color" id="solo-annual-vol">--</p>
+                </div>
+                <div class="solo-metric-card">
+                    <p class="solo-label">最大回撤</p>
+                    <p class="solo-value drawdown-color" id="solo-mdd">--</p>
+                </div>
+                <div class="solo-metric-card">
+                    <p class="solo-label">夏普比率</p>
+                    <p class="solo-value" id="solo-sharpe">--</p>
+                </div>
+                <div class="solo-metric-card">
+                    <p class="solo-label">卡玛比率</p>
+                    <p class="solo-value" id="solo-karma">--</p>
+                </div>
+            </div>
         </div>
     </div>
     <!-- DATA_INJECTION -->
-    <script src="assets/js/main.js"></script>
+    <script src="./assets/js/main.js"></script>
 </body>
 
 </html>
