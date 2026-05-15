@@ -10,8 +10,8 @@ class ChartData(TypedDict):
     dates: list
     nav: list
     drawdown: list
-    benchmark: list        # 可选，无基准时传空列表
-    excess_nav: list       # 可选，无基准时传空列表
+    benchmark: list  # 可选，无基准时传空列表
+    excess_nav: list  # 可选，无基准时传空列表
     drawdown_excess: list  # 可选，无基准时传空列表
 
 
@@ -50,20 +50,33 @@ def _generate_chart_config(chart_data: ChartData, has_benchmark: bool) -> dict:
         title_opts=opts.TitleOpts(
             title="收益回撤走势",
             pos_left="center",
-            title_textstyle_opts=opts.TextStyleOpts(font_size=20, font_weight="bold", color="#333"),
+            title_textstyle_opts=opts.TextStyleOpts(
+                font_size=20, font_weight="bold", color="#333"
+            ),
         ),
         legend_opts=opts.LegendOpts(pos_top="8%", pos_left="66%"),
         tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
-        axispointer_opts=opts.AxisPointerOpts(is_show=True, link=[{"xAxisIndex": "all"}]),
+        axispointer_opts=opts.AxisPointerOpts(
+            is_show=True, link=[{"xAxisIndex": "all"}]
+        ),
         xaxis_opts=opts.AxisOpts(type_="category", boundary_gap=False),
-        yaxis_opts=opts.AxisOpts(name="收益率 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %")),
-        datazoom_opts=[opts.DataZoomOpts(type_="inside", xaxis_index=[0, 1], range_start=0, range_end=100)],
+        yaxis_opts=opts.AxisOpts(
+            name="收益率 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %")
+        ),
+        datazoom_opts=[
+            opts.DataZoomOpts(
+                type_="inside", xaxis_index=[0, 1], range_start=0, range_end=100
+            )
+        ],
         toolbox_opts=opts.ToolboxOpts(
             is_show=True,
             pos_left="right",
             feature=opts.ToolBoxFeatureOpts(
                 save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(
-                    title="保存为图片", pixel_ratio=4, background_color="white", name="performance_report_chart"
+                    title="保存为图片",
+                    pixel_ratio=4,
+                    background_color="white",
+                    name="performance_report_chart",
                 ),
                 restore=True,
                 magic_type=False,
@@ -97,7 +110,9 @@ def _generate_chart_config(chart_data: ChartData, has_benchmark: bool) -> dict:
         )
 
     dd_chart.set_global_opts(
-        yaxis_opts=opts.AxisOpts(name="回撤 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %")),
+        yaxis_opts=opts.AxisOpts(
+            name="回撤 (%)", axislabel_opts=opts.LabelOpts(formatter="{value} %")
+        ),
         legend_opts=opts.LegendOpts(is_show=True, pos_left="66%", pos_top="66%"),
         xaxis_opts=opts.AxisOpts(is_show=False),
     )
@@ -125,7 +140,9 @@ def render_report(
     with open(template_path, "r", encoding="utf-8") as f:
         html_content = f.read()
 
-    html_content = html_content.replace("<h1>区间基础指标</h1>", f"<h1>{name} 业绩报告</h1>")
+    html_content = html_content.replace(
+        "<h1>区间基础指标</h1>", f"<h1>{name} 业绩报告</h1>"
+    )
 
     js_data = f"""
     window.reportData = {{
@@ -136,7 +153,9 @@ def render_report(
     }};
     """
 
-    html_content = html_content.replace("<!-- DATA_INJECTION -->", f"<script>{js_data}</script>")
+    html_content = html_content.replace(
+        "<!-- DATA_INJECTION -->", f"<script>{js_data}</script>"
+    )
 
     output_path = Path(output_html)
     output_dir = output_path.parent if output_path.parent != Path("") else Path(".")
@@ -177,7 +196,9 @@ if __name__ == "__main__":
         excess_nav=[],
         drawdown_excess=[],
     )
-    metrics_solo = {k: v for k, v in metrics.items() if "_Benchmark" not in k and "_Excess" not in k}
+    metrics_solo = {
+        k: v for k, v in metrics.items() if "_Benchmark" not in k and "_Excess" not in k
+    }
 
     render_report(
         name="乐水小波增强一号",

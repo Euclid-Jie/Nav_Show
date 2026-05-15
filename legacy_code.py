@@ -16,6 +16,7 @@ from typing import Optional, Dict
 # from nav_show import render_report, ChartData
 # import pandas as pd
 
+
 def prepare_data(
     date: NDArray[np.datetime64],
     nav: NDArray[np.floating],
@@ -35,7 +36,11 @@ def prepare_data(
     assert len(date) == len(nav), "日期与净值数据长度不匹配"
 
     nav_norm = nav / nav[0]  # 归一化
-    df = pd.DataFrame({"date": pd.to_datetime(date), "nav": nav_norm}).set_index("date").sort_index()
+    df = (
+        pd.DataFrame({"date": pd.to_datetime(date), "nav": nav_norm})
+        .set_index("date")
+        .sort_index()
+    )
 
     # 计算策略回撤
     cummax = np.maximum.accumulate(nav_norm)
@@ -93,7 +98,9 @@ def calculate_indicators(
     all_data = {}
 
     # 生成周期定义
-    base_interval = NavMetric.generate_intervals(last_day=last_date, last_week_day=last_week_date)
+    base_interval = NavMetric.generate_intervals(
+        last_day=last_date, last_week_day=last_week_date
+    )
 
     # 辅助函数：提取指标数据
     def _extract_metrics(metric: NavMetric, intervals: list, suffix: str = ""):
