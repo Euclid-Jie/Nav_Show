@@ -92,6 +92,7 @@ def calculate_indicators(
     """
     from nav_interval_metric.nav_metric import NavMetric
 
+    assert date.dtype == np.dtype("datetime64[D]"), "日期必须是 datetime64[D] 类型"
     last_date = last_date if last_date is not None else date[-1]
     last_week_date = last_week_date if last_week_date is not None else date[-2]
 
@@ -123,7 +124,7 @@ def calculate_indicators(
                 "start_date": np.datetime_as_string(_interval.start_date, unit="D"),
                 "end_date": np.datetime_as_string(_interval.end_date, unit="D"),
                 "interval_return": _interval.interval_return,
-                "interval_anual_return": _interval.interval_anual_return,
+                "interval_anual_return": _interval.interval_annual_return,
                 "interval_annual_vol": _interval.interval_annual_vol,
                 "interval_MDD": _interval.interval_MDD,
                 "interval_sharpe": _interval.interval_sharpe,
